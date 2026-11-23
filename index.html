@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moodle Quiz Builder</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3d5a99">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quiz Builder">
+<style>
+:root{--bg:#f0f4f8;--card:#fff;--pri:#3d5a99;--ok:#2e7d32;--warn:#e65100;--muted:#667788;--border:#dde3ec;--r:8px;--sh:0 1px 4px rgba(0,0,0,.09)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#1a1a2e;font:14px/1.5 'Segoe UI',system-ui,sans-serif}
+header{background:var(--pri);color:#fff;padding:.7rem 1.5rem;display:flex;align-items:center}
+header h1{font-size:1.05rem;font-weight:600}
+.ver{font-size:.72rem;opacity:.6;margin-left:auto}
+.wrap{max-width:960px;margin:0 auto;padding:1.1rem 1rem}
+button{padding:.36rem .85rem;border:none;border-radius:var(--r);cursor:pointer;font:.82rem/1 'Segoe UI',sans-serif;font-weight:500;transition:filter .12s}
+button:hover{filter:brightness(.9)}
+.bp{background:var(--pri);color:#fff} .bpm{background:#0277bd;color:#fff}
+.bpv{background:#6a1b9a;color:#fff}   .bpsa{background:#00695c;color:#fff}
+.bgen{background:#bf360c;color:#fff}
+.bj{background:#1565c0;color:#fff}    .bc{background:#1b5e20;color:#fff}
+.bak{background:#4a148c;color:#fff}   .bgft{background:#006064;color:#fff}
+.bxml{background:#e65100;color:#fff}
+.be{background:#e8ecf4;color:#333}    .bd{background:#fce4ec;color:#c62828}
+.bs{background:var(--ok);color:#fff}  .bn{background:#eee;color:#333}
+.sm{padding:.2rem .48rem;font-size:.72rem}
+/* view nav */
+.view-nav{display:flex;gap:.5rem;margin-bottom:1rem;padding:.65rem .9rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);align-items:center}
+.vnav{padding:.4rem 1rem;border:1px solid var(--border);border-radius:var(--r);font:.85rem/1 'Segoe UI',sans-serif;font-weight:600;cursor:pointer;background:#fff;transition:all .12s;display:flex;align-items:center;gap:.4rem}
+.vnav.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.vbadge{font-size:.68rem;padding:.08rem .32rem;border-radius:20px;font-weight:700;background:#eee;color:#555}
+.vnav.on .vbadge{background:rgba(255,255,255,.3);color:#fff}
+/* toolbar */
+.toolbar{display:flex;gap:.38rem;margin-bottom:.75rem;flex-wrap:wrap;align-items:center}
+.tg{display:flex;gap:.38rem;flex-wrap:wrap}
+.sep{flex:1;min-width:.3rem}
+.tlbl{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;align-self:center}
+/* filter bar */
+.filter-bar{display:flex;gap:.4rem;margin-bottom:.8rem;flex-wrap:wrap;align-items:center;padding:.55rem .75rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.filter-bar select{padding:.26rem .5rem;border:1px solid var(--border);border-radius:4px;font:.8rem/1 'Segoe UI',sans-serif;background:#fff;color:#333;cursor:pointer;max-width:160px}
+.filter-bar select:focus{outline:none;border-color:var(--pri)}
+.filter-reset{font-size:.76rem;color:var(--pri);cursor:pointer;text-decoration:underline;padding:.2rem}
+.filter-count{font-size:.76rem;color:var(--muted);margin-left:auto}
+/* badges */
+.badge{font-size:.62rem;padding:.1rem .38rem;border-radius:20px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.bmcq{background:#e8edf8;color:#3d5a99} .bmcqm{background:#e1f5fe;color:#0277bd}
+.btf{background:#f3e5f5;color:#6a1b9a}  .bsa{background:#e0f2f1;color:#00695c}
+.baok{background:#e8f5e9;color:#2e7d32} .bano{background:#fff3e0;color:#e65100}
+.bgok{background:#e0f7fa;color:#006064} .bgno{background:#fce4ec;color:#c62828}
+.bxok{background:#fff8e1;color:#bf360c} .bxno{background:#ffebee;color:#b71c1c}
+.df1{background:#e8f5e9;color:#2e7d32}  .df2{background:#fff8e1;color:#f57c00}  .df3{background:#ffebee;color:#c62828}
+.bsp-draft{background:#f5f5f5;color:#888}
+.bsp-reviewed{background:#e3f2fd;color:#1565c0}
+.bsp-approved{background:#e8f5e9;color:#2e7d32}
+.bsp-rejected{background:#ffebee;color:#c62828}
+/* cards */
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:.75rem;box-shadow:var(--sh)}
+.qc.ed{border-color:var(--pri);box-shadow:0 0 0 2px rgba(61,90,153,.12)}
+.qc.rejected{opacity:.55}
+.qh{display:flex;align-items:center;gap:.28rem;margin-bottom:.48rem;flex-wrap:wrap}
+.qn{color:var(--muted);font-size:.72rem;font-weight:700;min-width:1.2rem}
+.qa{margin-left:auto;display:flex;gap:.26rem}
+.prompt{font-weight:500;font-size:.9rem;line-height:1.4;margin-bottom:.48rem}
+.opts{list-style:none;display:flex;flex-direction:column;gap:.18rem}
+.opt{display:flex;align-items:center;gap:.4rem;padding:.2rem .42rem;border-radius:4px;font-size:.83rem}
+.opt.cor{background:#e8f5e9;color:#2e7d32;font-weight:600}
+.lt{font-weight:700;min-width:.9rem;color:var(--muted)}.opt.cor .lt{color:#2e7d32}
+.sa-ans{font-size:.83rem;padding:.25rem .48rem;background:#e0f2f1;border-radius:4px;color:#00695c;font-weight:600;margin-top:.28rem;display:inline-block}
+.sa-ans::before{content:'→ ';opacity:.7}
+.q-meta{font-size:.7rem;color:var(--muted);margin-top:.3rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.nwrap{display:flex;flex-direction:column;gap:.28rem;margin-top:.35rem}
+.anote{font-size:.71rem;padding:.25rem .48rem;border-radius:4px}
+.anote.na{background:#fff8f0;border:1px solid #ffe0b2;color:var(--warn)}
+.anote.ng{background:#fef0f3;border:1px solid #f8bbd0;color:#c62828}
+.anote.nx{background:#fff8e1;border:1px solid #ffe082;color:#bf360c}
+/* edit form */
+.ef label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em;display:block;margin:.5rem 0 .16rem}
+.ef textarea,.ef input[type=text]{width:100%;font:.87rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px;background:#fff}
+.ef textarea:focus,.ef input[type=text]:focus{outline:none;border-color:var(--pri)}
+.ef textarea{resize:vertical;min-height:55px}
+.or{display:flex;align-items:center;gap:.35rem;margin-bottom:.24rem}
+.or input[type=text]{flex:1}
+.or input[type=radio],.or input[type=checkbox]{accent-color:var(--ok);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.efa{display:flex;gap:.35rem;margin-top:.7rem;flex-wrap:wrap;align-items:center}
+.hint{font-size:.71rem;color:var(--muted);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
+.meta-sec{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--border)}
+.meta-title{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+.meta-row{display:flex;gap:.8rem 1.5rem;flex-wrap:wrap;align-items:flex-start}
+.meta-col{display:flex;flex-direction:column;gap:.18rem;min-width:140px}
+.meta-col label{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.meta-col input[type=text]{font:.82rem/1.4 'Segoe UI',sans-serif;padding:.26rem .42rem;border:1px solid var(--border);border-radius:4px}
+.meta-col input[type=text]:focus{outline:none;border-color:var(--pri)}
+.pill-row{display:flex;gap:.26rem;flex-wrap:wrap}
+.pill{background:#e8ecf4;color:#333;padding:.26rem .62rem;font-size:.78rem;border-radius:var(--r)}
+.pill.on{background:var(--pri);color:#fff}
+.chk-row{display:flex;align-items:center;gap:.38rem;font-size:.83rem;cursor:pointer}
+.chk-row input[type=checkbox]{accent-color:var(--ok);width:13px;height:13px}
+/* panel */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1rem;margin-top:1rem;box-shadow:var(--sh)}
+.ptitle{font-weight:700;font-size:.88rem;margin-bottom:.65rem;color:#333}
+.tabs{display:flex;gap:.26rem;margin-bottom:.65rem;flex-wrap:wrap}
+.tab{padding:.25rem .68rem;border-radius:20px;font-size:.74rem;cursor:pointer;border:1px solid var(--border);background:#fff;font-weight:500}
+.tab.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.sr{display:flex;align-items:baseline;gap:.6rem;padding:.28rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.sr:last-child{border:none}
+.sv{font-weight:700;color:var(--pri);font-size:.95rem;min-width:1.5rem;text-align:right}
+.sv.w{color:var(--warn)}
+.xsect{margin:.65rem 0 .3rem;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.xi{font-size:.78rem;padding:.26rem .48rem;border-radius:4px;margin-bottom:.26rem;display:flex;gap:.55rem;align-items:baseline}
+.xi.xa{background:#fff8f0;border:1px solid #ffe0b2} .xi.xg{background:#fef0f3;border:1px solid #f8bbd0} .xi.xm{background:#fff8e1;border:1px solid #ffe082}
+.xi b{color:#333;white-space:nowrap}
+.pre{background:#1e1e2e;color:#cdd6f4;font-family:'Consolas',monospace;font-size:.74rem;border-radius:var(--r);padding:.8rem;max-height:250px;overflow-y:auto;white-space:pre;line-height:1.5}
+.empty{font-size:.83rem;color:var(--muted);font-style:italic;padding:.3rem 0}
+/* blueprint panel */
+.bp-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:.9rem;box-shadow:var(--sh)}
+.bp-h{font-weight:700;font-size:.88rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
+.bp-section{margin-bottom:.65rem}
+.bp-slbl{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem}
+.bp-fields{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.bp-field{display:flex;align-items:center;gap:.28rem;font-size:.82rem}
+.bp-field label{color:var(--muted);font-size:.78rem;white-space:nowrap}
+.bpn{width:52px;padding:.24rem .35rem;border:1px solid var(--border);border-radius:4px;font:.82rem/1 'Segoe UI',sans-serif;text-align:center}
+.bpn:focus{outline:none;border-color:var(--pri)}
+.bp-sum{font-size:.74rem;padding:.15rem .35rem;border-radius:4px;font-weight:600}
+.bp-sum.ok{background:#e8f5e9;color:#2e7d32} .bp-sum.bad{background:#ffebee;color:#c62828}
+.bp-status{font-size:.82rem;color:var(--muted);margin:.5rem 0 .3rem}
+.bp-status b{color:var(--pri);font-size:.92rem}
+.bp-warn{font-size:.78rem;color:var(--warn);background:#fff8f0;border:1px solid #ffe0b2;border-radius:4px;padding:.32rem .5rem;margin:.3rem 0}
+/* exam cards */
+.exam-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;margin-bottom:.55rem;display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;transition:border-color .12s,background .12s}
+.exam-card.sel{border-color:var(--ok);background:#fafffe;box-shadow:0 0 0 1px #a5d6a7}
+.exam-card:hover:not(.sel){border-color:#aab}
+.ecb{margin-top:.14rem;flex-shrink:0;accent-color:var(--ok);width:14px;height:14px;cursor:pointer}
+.ebody{flex:1}
+.ehd{display:flex;align-items:center;gap:.25rem;flex-wrap:wrap;margin-bottom:.25rem}
+.eprompt{font-size:.85rem;line-height:1.4;color:#1a1a2e}
+.epool-empty{font-size:.85rem;color:var(--muted);font-style:italic;padding:1.2rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+/* export section */
+.xsec{display:flex;gap:.38rem;flex-wrap:wrap;align-items:center;padding:.65rem .85rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-top:.75rem}
+.xsec .xlbl{font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-right:.2rem}
+/* modal */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200}
+.mo-box{background:#fff;border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.2);width:min(680px,94vw);max-height:86vh;display:flex;flex-direction:column}
+.mo-hd{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--border);font-weight:600;font-size:.88rem;flex-shrink:0}
+.mo-body{padding:1rem;overflow-y:auto;flex:1}
+.mo-foot{padding:.65rem 1rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;flex-shrink:0}
+.mo-foot .rc{font-size:.8rem;color:var(--muted);flex:1}
+.dz{border:2px dashed var(--border);border-radius:var(--r);padding:1.6rem 1.2rem;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dz:hover,.dz.over{border-color:var(--pri);background:#f5f7ff}
+.dz-icon{font-size:1.9rem;margin-bottom:.38rem}
+.dz p{font-size:.83rem;margin:.18rem 0;color:var(--muted)}
+.dz-sub{font-size:.71rem;color:var(--muted);margin-top:.28rem}
+.div-or{text-align:center;font-size:.76rem;color:var(--muted);margin:.65rem 0;position:relative}
+.div-or::before,.div-or::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--border)}
+.div-or::before{left:0}.div-or::after{right:0}
+.paste-lbl{font-size:.74rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.28rem;display:block}
+.paste-ta{width:100%;min-height:85px;font:.82rem/1.44 'Segoe UI',sans-serif;padding:.38rem .48rem;border:1px solid var(--border);border-radius:4px;resize:vertical}
+.paste-ta:focus{outline:none;border-color:var(--pri)}
+.src-chip{font-size:.8rem;background:#f0f4f8;border:1px solid var(--border);border-radius:4px;padding:.28rem .55rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem}
+.src-chip .sc{color:var(--muted);font-size:.73rem;margin-left:auto}
+.cfg-row{margin-bottom:.8rem}
+.cfg-lbl{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:.3rem}
+.cfg-types{display:flex;gap:.55rem 1rem;flex-wrap:wrap}
+.cfg-types label{display:flex;align-items:center;gap:.32rem;font-size:.84rem;cursor:pointer}
+.cfg-types input[type=checkbox]{accent-color:var(--ok);width:13px;height:13px}
+.spin-wrap{text-align:center;padding:2.2rem 1rem}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--pri);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto .85rem}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spin-msg{font-size:.86rem;color:var(--muted);font-weight:500}
+.spin-sub{font-size:.74rem;color:var(--muted);margin-top:.35rem}
+.rev-list{display:flex;flex-direction:column;gap:.4rem}
+.rev-item{display:flex;align-items:flex-start;gap:.48rem;padding:.48rem .58rem;border:1px solid var(--border);border-radius:6px;font-size:.82rem;line-height:1.4}
+.rev-item input[type=checkbox]{margin-top:.16rem;flex-shrink:0;accent-color:var(--ok);width:13px;height:13px}
+.rev-meta{display:flex;flex-direction:column;gap:.2rem;flex-shrink:0;min-width:72px}
+.rev-badges{display:flex;gap:.2rem}
+.rev-prompt{flex:1}
+.err-box{background:#fce4ec;border:1px solid #f8bbd0;border-radius:var(--r);padding:.7rem;font-size:.83rem;color:#c62828}
+.err-box b{display:block;margin-bottom:.22rem}
+.err-act{display:flex;gap:.4rem;margin-top:.65rem;flex-wrap:wrap}
+/* ── ZIP ────────────────────────────────────────────────────── */
+.bzip{background:#37474f;color:#fff}
+.zip-fields{display:flex;gap:.42rem .65rem;flex-wrap:wrap;padding:.6rem;background:#f0f4f8;border-radius:var(--r);margin-bottom:.65rem}
+.zf{display:flex;flex-direction:column;gap:.14rem;min-width:90px;flex:1}
+.zf label{font-size:.66rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.zf input,.zf select{font:.8rem/1 'Segoe UI',sans-serif;padding:.24rem .4rem;border:1px solid var(--border);border-radius:4px;background:#fff;color:#333}
+.zf input:focus,.zf select:focus{outline:none;border-color:var(--pri)}
+.zip-basename{font-size:.7rem;font-family:Consolas,monospace;background:#fff;border:1px solid var(--border);border-radius:4px;padding:.26rem .46rem;margin-bottom:.6rem;color:#333;word-break:break-all}
+.zip-tree{font-size:.78rem;line-height:1.5}
+.ztfolder{font-size:.71rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:.48rem;padding-bottom:.1rem;border-bottom:1px solid var(--border)}
+.ztfolder:first-child{margin-top:0}
+.ztfile{display:flex;align-items:baseline;gap:.28rem;padding:.08rem .36rem;font-family:Consolas,monospace;font-size:.71rem;border-radius:3px}
+.ztfile:hover{background:#f5f7fa}
+.ztfile.ok{color:#1a1a2e} .ztfile.skip{color:#bbb}
+.ztfile.skip .ztn{text-decoration:line-through}
+.ztsize{color:var(--muted);font-size:.67rem;margin-left:auto;white-space:nowrap}
+.ztreason{color:var(--warn);font-size:.67rem;font-family:'Segoe UI',sans-serif;font-style:italic}
+.zip-summary-bar{display:flex;align-items:center;gap:.4rem;padding:.4rem .58rem;background:#f0f4f8;border-radius:4px;font-size:.78rem;margin-top:.55rem}
+/* ── REVIEW SLIDER ───────────────────────────────────────────── */
+.rev-topbar{display:flex;align-items:center;gap:.35rem;padding:.5rem 0;border-bottom:1px solid var(--border);margin-bottom:.5rem;flex-wrap:wrap}
+.rev-selcount{font-size:.78rem;color:var(--muted)}
+.rev-navbar{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.45rem}
+.rev-navbar button:disabled{opacity:.32;cursor:default;filter:none}
+.rev-pos{font-size:.86rem;font-weight:700;min-width:4rem;text-align:center;color:var(--pri)}
+.rev-slide{border:1px solid var(--border);border-radius:var(--r);padding:.7rem .85rem;transition:opacity .15s}
+.rev-slide.skip{opacity:.52}
+.rev-slide-hd{display:flex;align-items:center;gap:.25rem;flex-wrap:wrap;margin-bottom:.38rem}
+.rev-slide-prompt{font-weight:500;font-size:.9rem;line-height:1.4;margin-bottom:.42rem}
+.rev-dots{display:flex;flex-wrap:wrap;gap:.28rem;justify-content:center;margin-top:.5rem;padding:.15rem 0}
+.rev-dot{width:9px;height:9px;border-radius:50%;background:#dde3ec;cursor:pointer;transition:all .12s;flex-shrink:0}
+.rev-dot:hover{background:#aab}
+.rev-dot.sel{background:#a5d6a7}
+.rev-dot.cur{background:var(--pri);transform:scale(1.3)}
+.rev-dot.cur.sel{background:var(--ok);transform:scale(1.3)}
+/* ── PDF EXPORT ─────────────────────────────────────────────── */
+.bpdf{background:#6a1b9a;color:#fff}
+.pdf-cfg{display:flex;flex-direction:column;gap:.7rem}
+.pdf-row{display:flex;gap:.55rem 1rem;flex-wrap:wrap}
+.pdf-field{display:flex;flex-direction:column;gap:.2rem;flex:1;min-width:125px}
+.pdf-field.full{flex:none;width:100%}
+.pdf-field>label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.pdf-field input[type=text],.pdf-field select{font:.84rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px;background:#fff}
+.pdf-field input:focus,.pdf-field select:focus{outline:none;border-color:var(--pri)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧩 Moodle Quiz Builder</h1>
+  <span class="ver">v1.6 · dati salvati in questo browser</span>
+  <button class="sm" id="settings-btn" onclick="openSettings()" style="margin-left:.8rem;background:rgba(255,255,255,.16);color:#fff">⚙ Impostazioni</button>
+  <button class="sm" id="install-btn" onclick="installApp()" style="display:none;margin-left:.4rem;background:#fff;color:#3d5a99;font-weight:700">⬇ Installa app</button>
+</header>
+
+<div class="wrap">
+  <!-- View switcher -->
+  <div class="view-nav">
+    <button class="vnav on" id="vnav-bank" onclick="setView('bank')">
+      📚 Question Bank <span class="vbadge" id="badge-bank">0</span>
+    </button>
+    <button class="vnav" id="vnav-exam" onclick="setView('exam')">
+      📋 Prova Finale <span class="vbadge" id="badge-exam">0</span>
+    </button>
+    <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">
+      Approvate+ammissibili: <b id="eligible-count">0</b>
+    </span>
+    <button class="bzip sm" onclick="showZIPModal()" title="Esporta pacchetto ZIP completo" style="margin-left:.5rem;padding:.38rem .85rem;font-size:.82rem;font-weight:600">📦 ZIP</button>
+    <button class="bpdf sm" onclick="openPDFModal()" title="Esporta test in PDF cartaceo" style="margin-left:.3rem;padding:.38rem .85rem;font-size:.82rem;font-weight:600">📄 PDF</button>
+  </div>
+
+  <!-- ── BANK SECTION ─────────────────────────────────────────────── -->
+  <div id="bank-section">
+    <div class="toolbar">
+      <span class="tlbl">Aggiungi</span>
+      <div class="tg">
+        <button class="bp"   onclick="addQ('mcq_single')">＋ MCQ</button>
+        <button class="bpm"  onclick="addQ('mcq_multiple')">＋ MCQ Multi</button>
+        <button class="bpv"  onclick="addQ('true_false')">＋ Vero/Falso</button>
+        <button class="bpsa" onclick="addQ('short_answer')">＋ Risposta breve</button>
+        <button class="bgen" onclick="openGen()">📚 Genera da paper</button>
+      </div>
+      <div class="sep"></div>
+      <span class="tlbl">Esporta banca</span>
+      <div class="tg">
+        <button class="bj"   onclick="doExportBank('json')">⬇ JSON</button>
+        <button class="bc"   onclick="doExportBank('csv')">⬇ CSV</button>
+        <button class="bak"  onclick="doExportBank('aiken')">⬇ AIKEN</button>
+        <button class="bgft" onclick="doExportBank('gift')">⬇ GIFT</button>
+        <button class="bxml" onclick="doExportBank('xml')">⬇ XML</button>
+      </div>
+      <button class="bd" id="clear-all-btn" onclick="clearAllQs()" title="Elimina tutte le domande della banca">🗑 Svuota tutto</button>
+    </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div id="ql"></div>
+    <div class="panel">
+      <div class="ptitle">📊 Report &amp; Anteprima</div>
+      <div class="tabs">
+        <div class="tab on" onclick="setTab('report',this)">Report</div>
+        <div class="tab" onclick="setTab('aiken',this)">AIKEN</div>
+        <div class="tab" onclick="setTab('gift',this)">GIFT</div>
+        <div class="tab" onclick="setTab('xml',this)">XML</div>
+        <div class="tab" onclick="setTab('json',this)">JSON</div>
+      </div>
+      <div id="pb"></div>
+    </div>
+  </div>
+
+  <!-- ── EXAM SECTION ─────────────────────────────────────────────── -->
+  <div id="exam-section" style="display:none">
+    <div class="bp-panel">
+      <div class="bp-h">🎯 Blueprint prova finale
+        <button class="sm bs" onclick="autoSelect()" style="margin-left:auto">↺ Genera selezione automatica</button>
+      </div>
+      <div class="bp-section">
+        <div class="bp-slbl">Totale domande target</div>
+        <div class="bp-fields">
+          <div class="bp-field"><label>Totale</label><input class="bpn" type="number" min="1" max="200" id="bp-total" value="10" oninput="syncBP()"></div>
+          <div id="bp-typesum" class="bp-sum bad">0/10</div>
+        </div>
+      </div>
+      <div class="bp-section">
+        <div class="bp-slbl">Mix per tipo <span class="hint">(devono sommare al totale)</span></div>
+        <div class="bp-fields" id="bp-type-fields">
+          <div class="bp-field"><label>MCQ singola</label><input class="bpn" type="number" min="0" id="bp-mcq_single" value="4" oninput="syncBP()"></div>
+          <div class="bp-field"><label>MCQ multipla</label><input class="bpn" type="number" min="0" id="bp-mcq_multiple" value="2" oninput="syncBP()"></div>
+          <div class="bp-field"><label>Vero/Falso</label><input class="bpn" type="number" min="0" id="bp-true_false" value="2" oninput="syncBP()"></div>
+          <div class="bp-field"><label>Risposta breve</label><input class="bpn" type="number" min="0" id="bp-short_answer" value="2" oninput="syncBP()"></div>
+        </div>
+      </div>
+      <div class="bp-section">
+        <div class="bp-slbl">Mix per difficoltà % <span class="hint">(devono sommare a 100)</span></div>
+        <div class="bp-fields">
+          <div class="bp-field"><label>🟢 Facile %</label><input class="bpn" type="number" min="0" max="100" id="bp-d1" value="30" oninput="syncBP()"></div>
+          <div class="bp-field"><label>🟡 Medio %</label><input class="bpn" type="number" min="0" max="100" id="bp-d2" value="50" oninput="syncBP()"></div>
+          <div class="bp-field"><label>🔴 Difficile %</label><input class="bpn" type="number" min="0" max="100" id="bp-d3" value="20" oninput="syncBP()"></div>
+          <div id="bp-diffsum" class="bp-sum ok">100%</div>
+        </div>
+      </div>
+      <div id="bp-warns"></div>
+      <div class="bp-status" id="bp-status">Selezione: <b>0</b> domande — clicca "Genera selezione automatica" o seleziona manualmente.</div>
+    </div>
+    <div id="exam-ql"></div>
+    <div class="xsec">
+      <span class="xlbl">Esporta prova</span>
+      <button class="bj"   onclick="doExportExam('json')">⬇ JSON</button>
+      <button class="bc"   onclick="doExportExam('csv')">⬇ CSV</button>
+      <button class="bak"  onclick="doExportExam('aiken')">⬇ AIKEN</button>
+      <button class="bgft" onclick="doExportExam('gift')">⬇ GIFT</button>
+      <button class="bxml" onclick="doExportExam('xml')">⬇ XML</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generator modal -->
+<div id="gen-modal" class="mo" style="display:none" onclick="if(event.target===this)closeGen()">
+  <div class="mo-box">
+    <div class="mo-hd">
+      <span>📚 Genera domande da fonte accademica</span>
+      <button class="sm be" onclick="closeGen()">✕</button>
+    </div>
+    <div id="gen-content"></div>
+  </div>
+</div>
+<!-- ZIP modal -->
+<div id="zip-modal" class="mo" style="display:none" onclick="if(event.target===this)closeZIPModal()">
+  <div class="mo-box" style="width:min(720px,96vw)">
+    <div class="mo-hd">
+      <span>📦 Pacchetto ZIP</span>
+      <button class="sm be" onclick="closeZIPModal()">✕</button>
+    </div>
+    <div class="mo-body" id="zip-body"></div>
+    <div class="mo-foot">
+      <span id="zip-foot-info" style="font-size:.79rem;color:var(--muted);flex:1"></span>
+      <button class="bn" onclick="closeZIPModal()">Annulla</button>
+      <button class="bs" id="zip-dl-btn" onclick="generateAndDownloadZIP()">⬇ Scarica ZIP</button>
+    </div>
+  </div>
+</div>
+<!-- PDF modal -->
+<div id="pdf-modal" class="mo" style="display:none" onclick="if(event.target===this)closePDFModal()">
+  <div class="mo-box" style="width:min(560px,94vw)">
+    <div class="mo-hd">
+      <span>📄 Esporta test in PDF cartaceo</span>
+      <button class="sm be" onclick="closePDFModal()">✕</button>
+    </div>
+    <div class="mo-body" id="pdf-body"></div>
+    <div class="mo-foot">
+      <span style="font-size:.75rem;color:var(--muted);flex:1">DOCX: apri in Word &amp; stampa · HTML: Ctrl+P → Salva come PDF</span>
+      <button class="bn" onclick="closePDFModal()">Annulla</button>
+      <button class="bpm" onclick="generateDOCX()">⬇ DOCX</button>
+      <button class="bs" onclick="generatePDF()">⬇ HTML → PDF</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="json-import" accept=".json,application/json" style="display:none" onchange="importJSONFile(this.files[0])">
+<input type="file" id="src-file" accept=".pdf,.txt,.md" style="display:none" onchange="handleSrcFile(this.files[0])">
+
+<script>
+// ── MODEL & STATE ─────────────────────────────────────────────────────
+const META_DEFAULTS=()=>({moodle_category_path:'',bank_status:'draft',exam_eligible:false,difficulty:2,source_language:'',output_language:''});
+let qs=[
+  {id:'q1',type:'mcq_single',  prompt:'Quale tra i seguenti è un linguaggio di markup?',opts:['Python','HTML','Java','C++'],correct:1,...META_DEFAULTS()},
+  {id:'q2',type:'mcq_single',  prompt:'Quanti bit compongono un byte?',opts:['4','8','16','32'],correct:1,...META_DEFAULTS()},
+  {id:'q3',type:'true_false',  prompt:'Il protocollo HTTP è stateless per definizione.',opts:['Vero','Falso'],correct:0,...META_DEFAULTS()},
+  {id:'q4',type:'mcq_single',  prompt:'Quale struttura dati opera in modalità LIFO?',opts:['Coda','Heap','Stack','Grafo'],correct:2,...META_DEFAULTS()},
+  {id:'q5',type:'mcq_multiple',prompt:'Quali tra i seguenti sono linguaggi di programmazione?',opts:['Python','HTML','Java','CSS'],corrects:[0,2],...META_DEFAULTS()},
+  {id:'q6',type:'short_answer',prompt:'Qual è il nome del protocollo per il trasferimento di pagine web?',answer:'HTTP',...META_DEFAULTS()},
+];
+let editId=null,activeView='bank',activeTab='report',uid=7;
+let fType='',fCat='',fStatus='',fDiff='';
+let examSelection=new Set(),examWarnings=[];
+
+const TYPE_LABEL={mcq_single:'MCQ',mcq_multiple:'MCQ Multi',true_false:'Vero/Falso',short_answer:'Risposta breve'};
+const TYPE_CSS  ={mcq_single:'bmcq',mcq_multiple:'bmcqm',true_false:'btf',short_answer:'bsa'};
+const BS_LABEL  ={draft:'Bozza',reviewed:'Revisionata',approved:'Approvata',rejected:'Rifiutata'};
+const BS_CSS    ={draft:'bsp-draft',reviewed:'bsp-reviewed',approved:'bsp-approved',rejected:'bsp-rejected'};
+const DIFF_LABEL={1:'Facile',2:'Medio',3:'Difficile'};
+const DIFF_CSS  ={1:'df1',2:'df2',3:'df3'};
+const TYPES=['mcq_single','mcq_multiple','true_false','short_answer'];
+
+// ── VALIDATORS ────────────────────────────────────────────────────────
+function aikenCheck(q){
+  if(q.type!=='mcq_single')      return{ok:false,r:`"${TYPE_LABEL[q.type]||q.type}" non supportato`};
+  if(!q.prompt?.trim())          return{ok:false,r:'Testo vuoto'};
+  if(!q.opts||q.opts.length<2)   return{ok:false,r:'Meno di 2 opzioni'};
+  if(q.opts.some(o=>!o?.trim())) return{ok:false,r:'Opzione vuota'};
+  if(q.correct==null)            return{ok:false,r:'Risposta non definita'};
+  return{ok:true,r:''};
+}
+function giftCheck(q){
+  if(!q.prompt?.trim()) return{ok:false,r:'Testo vuoto'};
+  if(q.type==='mcq_single'){if(!q.opts||q.opts.length<2)return{ok:false,r:'Meno di 2 opzioni'};if(q.opts.some(o=>!o?.trim()))return{ok:false,r:'Opzione vuota'};if(q.correct==null)return{ok:false,r:'Risposta non definita'};}
+  else if(q.type==='mcq_multiple'){if(!q.opts||q.opts.length<2)return{ok:false,r:'Meno di 2 opzioni'};if(q.opts.some(o=>!o?.trim()))return{ok:false,r:'Opzione vuota'};if(!q.corrects||!q.corrects.length)return{ok:false,r:'Nessuna risposta corretta'};if(q.corrects.length>=q.opts.length)return{ok:false,r:'Tutte corrette: non valido'};}
+  else if(q.type==='true_false'){if(q.correct==null)return{ok:false,r:'Risposta non definita'};}
+  else if(q.type==='short_answer'){if(!q.answer?.trim())return{ok:false,r:'Risposta vuota'};}
+  return{ok:true,r:''};
+}
+function mxmlCheck(q){return giftCheck(q);} // same constraints; kept separate for future divergence
+
+// ── SERIALIZERS ───────────────────────────────────────────────────────
+function giftEsc(s){return String(s||'').replace(/([~=#{}\\])/g,'\\$1');}
+function buildGIFT(q){
+  const pr=giftEsc(q.prompt);
+  if(q.type==='mcq_single') return`::${q.id}:: ${pr} {\n${q.opts.map((o,i)=>`  ${i===q.correct?'=':'~'}${giftEsc(o)}`).join('\n')}\n}`;
+  if(q.type==='mcq_multiple'){const n=q.corrects.length,b=Math.round(100/n);let u=0;return`::${q.id}:: ${pr} {\n${q.opts.map((o,i)=>{const oe=giftEsc(o);if(q.corrects.includes(i)){const idx=q.corrects.indexOf(i);const p=idx===n-1?100-u:b;u+=p;return`  ~%${p}%${oe}`;}return`  ~%-100%${oe}`;}).join('\n')}\n}`;}
+  if(q.type==='true_false') return`::${q.id}:: ${pr} {${q.correct===0?'TRUE':'FALSE'}}`;
+  if(q.type==='short_answer') return`::${q.id}:: ${pr} {=${giftEsc(q.answer||'')}}`;
+  return'';
+}
+function xmlEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cdata(s){return`<![CDATA[${String(s||'').replace(/\]\]>/g,']]]]><![CDATA[>')}]]>`;}
+function buildMoodleXML(questions){
+  const lines=['<?xml version="1.0" encoding="UTF-8"?>','<quiz>'];
+  let lastCat=null;
+  questions.forEach(q=>{
+    const cat=q.moodle_category_path||'$course$/Top/Default';
+    if(cat!==lastCat){lines.push(`  <question type="category">\n    <category><text>${xmlEsc(cat)}</text></category>\n    <info format="html"><text></text></info>\n  </question>`);lastCat=cat;}
+    lines.push(buildQXML(q));
+  });
+  lines.push('</quiz>');return lines.join('\n\n');
+}
+function buildQXML(q){
+  const nm=xmlEsc(q.id);
+  const common=`    <name><text>${nm}</text></name>\n    <questiontext format="html"><text>${cdata('<p>'+q.prompt+'</p>')}</text></questiontext>\n    <generalfeedback format="html"><text></text></generalfeedback>\n    <defaultgrade>1</defaultgrade>\n    <hidden>0</hidden>`;
+  if(q.type==='mcq_single'||q.type==='mcq_multiple'){
+    const single=q.type==='mcq_single'?'true':'false',pen=q.type==='mcq_single'?'0.3333333':'0';
+    const nc=q.type==='mcq_single'?1:q.corrects.length,base=Math.round(100/nc);let used=0;
+    const ans=q.opts.map((o,i)=>{let fr;if(q.type==='mcq_single'){fr=i===q.correct?100:0;}else{if(q.corrects.includes(i)){const idx=q.corrects.indexOf(i);fr=idx===nc-1?100-used:base;used+=fr;}else fr=0;}return`    <answer fraction="${fr}" format="html">\n      <text>${cdata(o)}</text>\n      <feedback format="html"><text></text></feedback>\n    </answer>`;}).join('\n');
+    return`  <question type="multichoice">\n${common}\n    <penalty>${pen}</penalty>\n    <single>${single}</single>\n    <shuffleanswers>true</shuffleanswers>\n    <answernumbering>abc</answernumbering>\n    <correctfeedback format="html"><text></text></correctfeedback>\n    <partiallycorrectfeedback format="html"><text></text></partiallycorrectfeedback>\n    <incorrectfeedback format="html"><text></text></incorrectfeedback>\n${ans}\n  </question>`;
+  }
+  if(q.type==='true_false'){const tf=q.correct===0;return`  <question type="truefalse">\n${common}\n    <penalty>1</penalty>\n    <answer fraction="${tf?100:0}" format="html"><text>true</text><feedback format="html"><text></text></feedback></answer>\n    <answer fraction="${tf?0:100}" format="html"><text>false</text><feedback format="html"><text></text></feedback></answer>\n  </question>`;}
+  if(q.type==='short_answer') return`  <question type="shortanswer">\n${common}\n    <penalty>0</penalty>\n    <usecase>0</usecase>\n    <answer fraction="100" format="html"><text>${xmlEsc(q.answer||'')}</text><feedback format="html"><text></text></feedback></answer>\n  </question>`;
+  return'';
+}
+
+// ── RENDER DISPATCHER ────────────────────────────────────────────────
+function render(){
+  updateNavBadges();
+  if(activeView==='bank') renderBank();
+  else renderExam();
+}
+function updateNavBadges(){
+  const nb=document.getElementById('badge-bank'),ne=document.getElementById('badge-exam'),ec=document.getElementById('eligible-count');
+  if(nb) nb.textContent=qs.filter(q=>q.bank_status!=='rejected').length;
+  if(ne) ne.textContent=examSelection.size;
+  if(ec) ec.textContent=qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible).length;
+}
+function setView(v){
+  activeView=v;
+  document.getElementById('vnav-bank').classList.toggle('on',v==='bank');
+  document.getElementById('vnav-exam').classList.toggle('on',v==='exam');
+  document.getElementById('bank-section').style.display=v==='bank'?'':'none';
+  document.getElementById('exam-section').style.display=v==='exam'?'':'none';
+  render();
+}
+
+// ── BANK RENDER ───────────────────────────────────────────────────────
+function renderBank(){
+  renderFilterBar();
+  const fqs=filteredQs();
+  document.getElementById('ql').innerHTML=fqs.length
+    ?fqs.map((q,i)=>rCard(q,i)).join('')
+    :`<div class="epool-empty">${qs.length?'Nessuna domanda corrisponde ai filtri applicati.':'La banca è vuota: aggiungi una domanda o usa «📚 Genera da paper».'}</div>`;
+  rPanel();
+}
+function filteredQs(){
+  return qs.filter(q=>{
+    if(fType&&q.type!==fType)return false;
+    if(fStatus&&q.bank_status!==fStatus)return false;
+    if(fCat&&q.moodle_category_path!==fCat)return false;
+    if(fDiff&&String(q.difficulty||2)!==fDiff)return false;
+    return true;
+  });
+}
+function renderFilterBar(){
+  const cats=[...new Set(qs.map(q=>q.moodle_category_path).filter(Boolean))];
+  const total=filteredQs().length;
+  const hasFilter=fType||fStatus||fCat||fDiff;
+  document.getElementById('filter-bar').innerHTML=`
+    <select onchange="setFilter('type',this.value)">
+      <option value="">Tutti i tipi</option>
+      ${TYPES.map(t=>`<option value="${t}"${fType===t?' selected':''}>${TYPE_LABEL[t]}</option>`).join('')}
+    </select>
+    <select onchange="setFilter('status',this.value)">
+      <option value="">Tutti gli stati</option>
+      ${Object.entries(BS_LABEL).map(([k,v])=>`<option value="${k}"${fStatus===k?' selected':''}>${v}</option>`).join('')}
+    </select>
+    <select onchange="setFilter('cat',this.value)">
+      <option value="">Tutte le categorie</option>
+      ${cats.map(c=>`<option value="${esc(c)}"${fCat===c?' selected':''}>${esc(c)}</option>`).join('')}
+    </select>
+    <select onchange="setFilter('diff',this.value)">
+      <option value="">Tutte le difficoltà</option>
+      ${[1,2,3].map(d=>`<option value="${d}"${fDiff===String(d)?' selected':''}>${DIFF_LABEL[d]}</option>`).join('')}
+    </select>
+    ${hasFilter?`<span class="filter-reset" onclick="resetFilters()">✕ Reimposta</span>`:''}
+    <span class="filter-count">${total} / ${qs.length} domande</span>`;
+}
+function setFilter(k,v){if(k==='type')fType=v;else if(k==='status')fStatus=v;else if(k==='cat')fCat=v;else if(k==='diff')fDiff=v;renderBank();}
+function resetFilters(){fType='';fStatus='';fCat='';fDiff='';renderBank();}
+
+// ── CARD RENDER ───────────────────────────────────────────────────────
+function notesHtml(ak,gt,mx){
+  const n=[];
+  if(!ak.ok)n.push(`<div class="anote na">⚠ AIKEN: ${esc(ak.r)}</div>`);
+  if(!gt.ok)n.push(`<div class="anote ng">⚠ GIFT: ${esc(gt.r)}</div>`);
+  if(!mx.ok)n.push(`<div class="anote nx">⚠ XML: ${esc(mx.r)}</div>`);
+  return n.length?`<div class="nwrap">${n.join('')}</div>`:'';
+}
+function rCard(q,i){
+  const ak=aikenCheck(q),gt=giftCheck(q),mx=mxmlCheck(q);
+  if(editId===q.id)return rEdit(q,i,ak,gt,mx);
+  let body='';
+  if(q.type==='short_answer'){body=`<div class="sa-ans">${esc(q.answer||'(vuota)')}</div>`;}
+  else{const multi=q.type==='mcq_multiple',cs=multi?new Set(q.corrects||[]):null;body=`<ul class="opts">${(q.opts||[]).map((o,j)=>{const cor=multi?cs.has(j):j===q.correct;return`<li class="opt${cor?' cor':''}"><span class="lt">${L(j)}.</span>${esc(o)}</li>`;}).join('')}</ul>`;}
+  const bs=q.bank_status||'draft';
+  const catStr=q.moodle_category_path?`<span class="cat">📁 ${esc(q.moodle_category_path)}</span>`:'';
+  const metaLine=(q.moodle_category_path||bs!=='draft'||q.exam_eligible)?`<div class="q-meta">${catStr}<span class="badge ${BS_CSS[bs]}">${BS_LABEL[bs]}</span>${q.exam_eligible?'<span style="font-size:.7rem;color:var(--ok)">⭐ Esame</span>':''}</div>`:'';
+  return`<div class="qc${bs==='rejected'?' rejected':''}" id="qc-${q.id}">
+    <div class="qh">
+      <span class="qn">${i+1}.</span>
+      <span class="badge ${TYPE_CSS[q.type]}">${TYPE_LABEL[q.type]}</span>
+      <span class="badge ${DIFF_CSS[q.difficulty||2]}">${DIFF_LABEL[q.difficulty||2]}</span>
+      <span class="badge ${ak.ok?'baok':'bano'}">${ak.ok?'✓':'✗'} AK</span>
+      <span class="badge ${gt.ok?'bgok':'bgno'}">${gt.ok?'✓':'✗'} GF</span>
+      <span class="badge ${mx.ok?'bxok':'bxno'}" id="xb-${q.id}">${mx.ok?'✓':'✗'} XML</span>
+      <div class="qa">
+        ${bs!=='approved'?`<button class="sm bs" title="Approva" onclick="setStatus('${q.id}','approved')">✓</button>`:''}
+        ${bs!=='rejected'?`<button class="sm bd" title="Rifiuta" onclick="setStatus('${q.id}','rejected')">✗</button>`:''}
+        ${bs==='approved'||bs==='rejected'?`<button class="sm be" title="Reimposta a Bozza" onclick="setStatus('${q.id}','draft')">↺</button>`:''}
+        <button class="sm be" onclick="startEdit('${q.id}')">✎</button>
+        <button class="sm bd" onclick="delQ('${q.id}')">✕</button>
+      </div>
+    </div>
+    <div class="prompt">${esc(q.prompt)}</div>
+    ${body}${metaLine}${notesHtml(ak,gt,mx)}
+  </div>`;
+}
+function rEdit(q,i,ak,gt,mx){
+  const tf=q.type==='true_false',sa=q.type==='short_answer',multi=q.type==='mcq_multiple';
+  let editBody='';
+  if(sa){editBody=`<label>Risposta accettata</label><input type="text" value="${esc(q.answer||'')}" placeholder="es. HTTP" oninput="setAnswer('${q.id}',this.value)"><div class="hint" style="margin-top:.25rem">Per alias multipli, separali con | (supporto futuro)</div>`;}
+  else{
+    const rows=(q.opts||[]).map((o,j)=>{
+      const cor=multi?(q.corrects||[]).includes(j):j===q.correct;
+      const ctrl=multi?`<input type="checkbox" ${cor?'checked':''} onchange="setCorrectM('${q.id}',${j},this.checked)">`:`<input type="radio" name="cr-${q.id}" ${cor?'checked':''} onchange="setCorrect('${q.id}',${j})">`;
+      const del=!tf&&(q.opts||[]).length>2?`<button class="sm bd" onclick="removeOpt('${q.id}',${j})">✕</button>`:'';
+      return`<div class="or">${ctrl}<input type="text" value="${esc(o)}" placeholder="Opzione ${j+1}" oninput="setOpt('${q.id}',${j},this.value)" ${tf?'readonly':''}>${del}</div>`;
+    }).join('');
+    const hint=multi?`<span class="hint"> — ☑ tutte le risposte corrette</span>`:(!tf?`<span class="hint"> — ● = risposta corretta</span>`:'');
+    const addBtn=!tf?`<button class="sm bp" style="margin-top:.32rem" onclick="addOpt('${q.id}')">＋ Opzione</button>`:'';
+    editBody=`<label>Opzioni${hint}</label>${rows}${addBtn}`;
+  }
+  const bs=q.bank_status||'draft',d=q.difficulty||2;
+  return`<div class="qc ed" id="qc-${q.id}">
+    <div class="qh">
+      <span class="qn">${i+1}.</span>
+      <span class="badge ${TYPE_CSS[q.type]}">${TYPE_LABEL[q.type]}</span>
+      <span class="badge ${DIFF_CSS[d]}">${DIFF_LABEL[d]}</span>
+      <span class="badge ${ak.ok?'baok':'bano'}" id="ab-${q.id}">${ak.ok?'✓':'✗'} AK</span>
+      <span class="badge ${gt.ok?'bgok':'bgno'}" id="gb-${q.id}">${gt.ok?'✓':'✗'} GF</span>
+      <span class="badge ${mx.ok?'bxok':'bxno'}" id="xb-${q.id}">${mx.ok?'✓':'✗'} XML</span>
+    </div>
+    <div class="ef">
+      <label>Testo della domanda</label>
+      <textarea oninput="setPrompt('${q.id}',this.value)">${esc(q.prompt)}</textarea>
+      ${editBody}
+      <div id="an-${q.id}">${notesHtml(ak,gt,mx)}</div>
+      <div class="meta-sec">
+        <div class="meta-title">Metadati Moodle</div>
+        <div class="meta-row">
+          <div class="meta-col" style="flex:2;min-width:180px">
+            <label>Categoria Moodle</label>
+            <input type="text" value="${esc(q.moodle_category_path||'')}" placeholder="es. $course$/Top/Cap1" oninput="setCatPath('${q.id}',this.value)">
+          </div>
+          <div class="meta-col">
+            <label>Difficoltà</label>
+            <div class="pill-row">
+              ${[1,2,3].map(v=>`<button class="pill${d===v?' on':''}" data-df="${q.id}-${v}" onclick="setDiff('${q.id}',${v})">${DIFF_LABEL[v]}</button>`).join('')}
+            </div>
+          </div>
+          <div class="meta-col">
+            <label>Stato</label>
+            <div class="pill-row">
+              ${Object.keys(BS_LABEL).map(s=>`<button class="pill${bs===s?' on':''}" data-bs="${q.id}-${s}" onclick="setBankStatus('${q.id}','${s}')">${BS_LABEL[s]}</button>`).join('')}
+            </div>
+            <label class="chk-row" style="margin-top:.38rem">
+              <input type="checkbox" ${q.exam_eligible?'checked':''} onchange="setExamEligible('${q.id}',this.checked)"> ⭐ Ammissibile all'esame
+            </label>
+          </div>
+        </div>
+      </div><!-- EXTENSION POINT: source_language, output_language -->
+      <div class="efa">
+        <button class="bs" onclick="stopEdit()">✓ Salva</button>
+        <button class="bn" onclick="stopEdit()">Annulla</button>
+        <button class="sm bd" style="margin-left:auto" onclick="delQ('${q.id}')">✕ Elimina</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── EXAM RENDER ───────────────────────────────────────────────────────
+function renderExam(){
+  const pool=qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible);
+  syncBP();
+  const cards=pool.length
+    ?pool.map(q=>{
+      const sel=examSelection.has(q.id);
+      const ak=aikenCheck(q),gt=giftCheck(q),mx=mxmlCheck(q);
+      return`<div class="exam-card${sel?' sel':''}" onclick="toggleExamQ('${q.id}')">
+        <input type="checkbox" class="ecb" ${sel?'checked':''} onclick="event.stopPropagation()" onchange="toggleExamQ('${q.id}')">
+        <div class="ebody">
+          <div class="ehd">
+            <span class="badge ${TYPE_CSS[q.type]}">${TYPE_LABEL[q.type]}</span>
+            <span class="badge ${DIFF_CSS[q.difficulty||2]}">${DIFF_LABEL[q.difficulty||2]}</span>
+            <span class="badge ${ak.ok?'baok':'bano'}">${ak.ok?'✓':'✗'} AK</span>
+            <span class="badge ${gt.ok?'bgok':'bgno'}">${gt.ok?'✓':'✗'} GF</span>
+            <span class="badge ${mx.ok?'bxok':'bxno'}">${mx.ok?'✓':'✗'} XML</span>
+            ${q.moodle_category_path?`<span style="font-size:.7rem;color:var(--muted)">📁 ${esc(q.moodle_category_path)}</span>`:''}
+          </div>
+          <div class="eprompt">${esc(q.prompt)}</div>
+        </div>
+      </div>`;
+    }).join('')
+    :`<div class="epool-empty">📭 Nessuna domanda approvata e ammissibile alla prova.<br>Approva item nel Question Bank e spunta "⭐ Ammissibile all'esame".</div>`;
+  document.getElementById('exam-ql').innerHTML=cards;
+  updateExamStatus();
+  updateNavBadges();
+}
+function toggleExamQ(id){
+  if(examSelection.has(id))examSelection.delete(id);else examSelection.add(id);
+  // Update just this card's checkbox & class without full re-render
+  const card=document.querySelector(`[onclick*="toggleExamQ('${id}')"].exam-card`);
+  if(card){card.classList.toggle('sel',examSelection.has(id));const cb=card.querySelector('.ecb');if(cb)cb.checked=examSelection.has(id);}
+  updateExamStatus();updateNavBadges();
+}
+function updateExamStatus(){
+  const total=getBPTotal();
+  const n=examSelection.size;
+  const el=document.getElementById('bp-status');
+  if(el){
+    const pct=total>0?Math.round(n/total*100):0;
+    el.innerHTML=`Selezione: <b>${n}</b> / <b>${total}</b> domande target${examWarnings.length?` <span style="color:var(--warn)">⚠ ${examWarnings.length} avvisi</span>`:''}`;
+  }
+  const warnEl=document.getElementById('bp-warns');
+  if(warnEl) warnEl.innerHTML=examWarnings.map(w=>`<div class="bp-warn">⚠ ${esc(w)}</div>`).join('');
+}
+
+// ── BLUEPRINT ─────────────────────────────────────────────────────────
+function getBPTotal(){return parseInt(document.getElementById('bp-total')?.value||10);}
+function getBPTypes(){return{mcq_single:parseInt(document.getElementById('bp-mcq_single')?.value||0),mcq_multiple:parseInt(document.getElementById('bp-mcq_multiple')?.value||0),true_false:parseInt(document.getElementById('bp-true_false')?.value||0),short_answer:parseInt(document.getElementById('bp-short_answer')?.value||0)};}
+function getBPDiff(){return{d1:parseInt(document.getElementById('bp-d1')?.value||30),d2:parseInt(document.getElementById('bp-d2')?.value||50),d3:parseInt(document.getElementById('bp-d3')?.value||20)};}
+function syncBP(){
+  const total=getBPTotal(),types=getBPTypes(),diff=getBPDiff();
+  const typeSum=Object.values(types).reduce((a,b)=>a+b,0);
+  const diffSum=diff.d1+diff.d2+diff.d3;
+  const ts=document.getElementById('bp-typesum'),ds=document.getElementById('bp-diffsum');
+  if(ts){ts.textContent=`${typeSum}/${total}`;ts.className=`bp-sum ${typeSum===total?'ok':'bad'}`;}
+  if(ds){ds.textContent=`${diffSum}%`;ds.className=`bp-sum ${diffSum===100?'ok':'bad'}`;}
+}
+function autoSelect(){
+  const total=getBPTotal(),types=getBPTypes(),diff=getBPDiff();
+  const pool=qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible);
+  const newSel=new Set();examWarnings=[];
+  const dSum=diff.d1+diff.d2+diff.d3||1;
+  TYPES.forEach(t=>{
+    const target=types[t]||0;if(!target)return;
+    const avail=pool.filter(q=>q.type===t);
+    if(!avail.length){examWarnings.push(`${TYPE_LABEL[t]}: richieste ${target}, disponibili 0`);return;}
+    const d1w=Math.round(target*diff.d1/dSum),d2w=Math.round(target*diff.d2/dSum),d3w=target-d1w-d2w;
+    const d1p=avail.filter(q=>(q.difficulty||2)===1),d2p=avail.filter(q=>(q.difficulty||2)===2),d3p=avail.filter(q=>(q.difficulty||2)===3);
+    const picked=[];
+    const add=(pool,n)=>{pool.filter(q=>!picked.find(p=>p.id===q.id)).slice(0,Math.max(0,n)).forEach(q=>picked.push(q));};
+    add(d1p,d1w);add(d2p,d2w);add(d3p,d3w);
+    if(picked.length<target) add(avail,target-picked.length);
+    if(picked.length<target) examWarnings.push(`${TYPE_LABEL[t]}: richieste ${target}, inserite ${picked.length}`);
+    picked.forEach(q=>newSel.add(q.id));
+  });
+  if(newSel.size<total&&!examWarnings.length) examWarnings.push(`Selezione: ${newSel.size}/${total} — aggiusta i contatori per tipo o aggiungi item al pool`);
+  examSelection=newSel;
+  renderExam();
+}
+
+// ── PANEL ─────────────────────────────────────────────────────────────
+function rPanel(){
+  const pb=document.getElementById('pb');if(!pb)return;
+  if(activeTab==='report')    pb.innerHTML=rReport();
+  else if(activeTab==='aiken')pb.innerHTML=rAiken();
+  else if(activeTab==='gift') pb.innerHTML=rGIFT();
+  else if(activeTab==='xml')  pb.innerHTML=rXML();
+  else                        pb.innerHTML=rJSON();
+}
+function rReport(){
+  const akOk=qs.filter(q=>aikenCheck(q).ok),akEx=qs.filter(q=>!aikenCheck(q).ok);
+  const gtOk=qs.filter(q=>giftCheck(q).ok), gtEx=qs.filter(q=>!giftCheck(q).ok);
+  const mxOk=qs.filter(q=>mxmlCheck(q).ok),mxEx=qs.filter(q=>!mxmlCheck(q).ok);
+  const cnt=t=>qs.filter(q=>q.type===t).length;
+  const cntS=s=>qs.filter(q=>q.bank_status===s).length;
+  return`
+    <div class="sr"><span class="sv">${qs.length}</span> domande totali</div>
+    <div class="sr"><span class="sv">${cnt('mcq_single')}</span> MCQ singola · <span class="sv">${cnt('mcq_multiple')}</span> MCQ multipla · <span class="sv">${cnt('true_false')}</span> V/F · <span class="sv">${cnt('short_answer')}</span> Breve</div>
+    <div class="sr"><span class="sv">${cntS('draft')}</span> Bozza · <span class="sv">${cntS('reviewed')}</span> Revisionata · <span class="sv">${cntS('approved')}</span> Approvata · <span class="sv w">${cntS('rejected')}</span> Rifiutata</div>
+    <div class="sr"><span class="sv">${qs.filter(q=>q.exam_eligible).length}</span> ammissibili esame · <span class="sv">${qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible).length}</span> pronte per prova</div>
+    <div class="sr"><span class="sv">${akOk.length}</span> compatibili AIKEN · <span class="sv">${gtOk.length}</span> GIFT · <span class="sv">${mxOk.length}</span> XML</div>
+    <div class="xsect">Esclusioni AIKEN</div>${akEx.length?akEx.map(q=>`<div class="xi xa"><b>${esc(q.id)}</b><span>${esc(aikenCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}
+    <div class="xsect">Esclusioni GIFT</div>${gtEx.length?gtEx.map(q=>`<div class="xi xg"><b>${esc(q.id)}</b><span>${esc(giftCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}
+    <div class="xsect">Esclusioni Moodle XML</div>${mxEx.length?mxEx.map(q=>`<div class="xi xm"><b>${esc(q.id)}</b><span>${esc(mxmlCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}`;
+}
+function rAiken(){const lines=[];qs.filter(q=>aikenCheck(q).ok&&q.bank_status!=='rejected').forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});return`<div class="pre">${esc(lines.join('\n')||'(nessuna)')}</div>`;}
+function rGIFT(){const comp=qs.filter(q=>giftCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const l=['// GIFT — Moodle Quiz Builder v1.6',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});return`<div class="pre">${esc(l.join('\n'))}</div>`;}
+function rXML(){const comp=qs.filter(q=>mxmlCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const xml=buildMoodleXML(comp);return`<div class="pre">${esc(xml.length>3500?xml.slice(0,3500)+'\n…':xml)}</div>`;}
+function rJSON(){const data=qs.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok}));return`<div class="pre">${esc(JSON.stringify(data,null,2))}</div>`;}
+
+// ── MUTATIONS ─────────────────────────────────────────────────────────
+function addQ(type){
+  const id='q'+(uid++),m=META_DEFAULTS();
+  if(type==='mcq_single')   qs.push({id,type,prompt:'',opts:['','','',''],correct:0,...m});
+  else if(type==='mcq_multiple')qs.push({id,type,prompt:'',opts:['','','',''],corrects:[0],...m});
+  else if(type==='true_false')  qs.push({id,type,prompt:'',opts:['Vero','Falso'],correct:0,...m});
+  else if(type==='short_answer')qs.push({id,type,prompt:'',answer:'',...m});
+  editId=id;render();
+  requestAnimationFrame(()=>document.getElementById('qc-'+id)?.scrollIntoView({behavior:'smooth',block:'center'}));
+}
+// Svuotamento rapido: confirm() è disattivato nel frame, quindi conferma a doppio clic
+let clearArmed=null;
+function clearAllQs(){
+  const btn=document.getElementById('clear-all-btn');
+  if(!qs.length){toast('La banca è già vuota.');return;}
+  if(!clearArmed){
+    if(btn){btn.textContent=`⚠ Conferma: elimina ${qs.length} domande`;btn.style.background='#c62828';btn.style.color='#fff';}
+    clearArmed=setTimeout(()=>{clearArmed=null;if(btn){btn.textContent='🗑 Svuota tutto';btn.style.background='';btn.style.color='';}},4000);
+    return;
+  }
+  clearTimeout(clearArmed);clearArmed=null;
+  const n=qs.length;
+  qs=[];examSelection=new Set();examWarnings=[];editId=null;
+  fType='';fCat='';fStatus='';fDiff='';
+  if(btn){btn.textContent='🗑 Svuota tutto';btn.style.background='';btn.style.color='';}
+  render();
+  toast(`Banca svuotata: ${n} domande eliminate.`);
+}
+function delQ(id){qs=qs.filter(q=>q.id!==id);examSelection.delete(id);if(editId===id)editId=null;render();}
+function startEdit(id){editId=id;renderBank();}
+function stopEdit(){editId=null;renderBank();}
+function setPrompt(id,v){const q=get(id);if(q){q.prompt=v;liveUpdate(id);}}
+function setOpt(id,j,v){const q=get(id);if(q){q.opts[j]=v;liveUpdate(id);}}
+function setAnswer(id,v){const q=get(id);if(q){q.answer=v;liveUpdate(id);}}
+function setCorrect(id,j){const q=get(id);if(q){q.correct=j;renderBank();}}
+function setCorrectM(id,j,checked){const q=get(id);if(!q)return;q.corrects=q.corrects||[];if(checked){if(!q.corrects.includes(j))q.corrects.push(j);}else q.corrects=q.corrects.filter(c=>c!==j);renderBank();}
+function addOpt(id){const q=get(id);if(!q||(q.opts||[]).length>=8)return;q.opts.push('');renderBank();}
+function removeOpt(id,j){const q=get(id);if(!q)return;q.opts.splice(j,1);if(q.type==='mcq_multiple')q.corrects=(q.corrects||[]).filter(c=>c!==j).map(c=>c>j?c-1:c);else if(q.correct>=(q.opts||[]).length)q.correct=q.opts.length-1;renderBank();}
+// Metadata (no re-render needed for most — only affects badges)
+function setCatPath(id,v){const q=get(id);if(q)q.moodle_category_path=v;}
+function setDiff(id,v){
+  const q=get(id);if(!q)return;q.difficulty=v;
+  ['1','2','3'].forEach(x=>{const b=document.querySelector(`[data-df="${id}-${x}"]`);if(b)b.classList.toggle('on',parseInt(x)===v);});
+}
+function setBankStatus(id,s){
+  const q=get(id);if(!q)return;q.bank_status=s;
+  Object.keys(BS_LABEL).forEach(x=>{const b=document.querySelector(`[data-bs="${id}-${x}"]`);if(b)b.classList.toggle('on',x===s);});
+}
+function setExamEligible(id,v){const q=get(id);if(q)q.exam_eligible=v;}
+function setStatus(id,s){const q=get(id);if(q){q.bank_status=s;renderBank();}}
+function liveUpdate(id){
+  const q=get(id);if(!q)return;
+  const ak=aikenCheck(q),gt=giftCheck(q),mx=mxmlCheck(q);
+  const ab=document.getElementById('ab-'+id),gb=document.getElementById('gb-'+id),xb=document.getElementById('xb-'+id),an=document.getElementById('an-'+id);
+  if(ab){ab.className=`badge ${ak.ok?'baok':'bano'}`;ab.textContent=(ak.ok?'✓':'✗')+' AK';}
+  if(gb){gb.className=`badge ${gt.ok?'bgok':'bgno'}`;gb.textContent=(gt.ok?'✓':'✗')+' GF';}
+  if(xb){xb.className=`badge ${mx.ok?'bxok':'bxno'}`;xb.textContent=(mx.ok?'✓':'✗')+' XML';}
+  if(an)an.innerHTML=notesHtml(ak,gt,mx);
+  rPanel();
+}
+
+// ── EXPORT (bank = non-rejected; exam = examSelection) ────────────────
+function doExportBank(fmt){doExportItems(fmt,qs.filter(q=>q.bank_status!=='rejected'),'bank');}
+function doExportExam(fmt){
+  if(!examSelection.size){alert('Nessuna domanda nella prova finale. Usa "Genera selezione" o seleziona manualmente.');return;}
+  doExportItems(fmt,qs.filter(q=>examSelection.has(q.id)),'exam');
+}
+function doExportItems(fmt,items,suffix){
+  if(fmt==='json'){
+    const data=items.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok}));
+    dl(`quiz_${suffix}.json`,JSON.stringify(data,null,2),'application/json');
+  } else if(fmt==='csv'){
+    const mx=Math.max(0,...items.map(q=>(q.opts||[]).length));
+    const hdr=['id','type','prompt',...Array.from({length:mx},(_,i)=>`opt_${i+1}`),'correct_letter','answer','category','status','difficulty','exam_eligible','aiken_ok','gift_ok','mxml_ok'];
+    const rows=items.map(q=>{
+      const pad=[...(q.opts||[])];while(pad.length<mx)pad.push('');
+      let cl='';if(q.type==='mcq_multiple')cl=(q.corrects||[]).map(i=>L(i)).join(';');else if(q.correct!=null)cl=L(q.correct);
+      return[q.id,q.type,q.prompt,...pad,cl,q.answer||'',q.moodle_category_path||'',q.bank_status||'draft',q.difficulty||2,q.exam_eligible?'true':'false',aikenCheck(q).ok?'YES':'NO',giftCheck(q).ok?'YES':'NO',mxmlCheck(q).ok?'YES':'NO'].map(ce).join(',');
+    });
+    dl(`quiz_${suffix}.csv`,[hdr.join(','),...rows].join('\n'),'text/csv');
+  } else if(fmt==='aiken'){
+    const comp=items.filter(q=>aikenCheck(q).ok);
+    if(!comp.length){alert('Nessuna domanda compatibile con AIKEN.');return;}
+    const lines=[];comp.forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});
+    dl(`quiz_${suffix}_aiken.txt`,lines.join('\n'),'text/plain');
+  } else if(fmt==='gift'){
+    const comp=items.filter(q=>giftCheck(q).ok);
+    if(!comp.length){alert('Nessuna domanda compatibile con GIFT.');return;}
+    const l=['// Moodle GIFT — Moodle Quiz Builder v1.6',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});
+    dl(`quiz_${suffix}.gift`,l.join('\n'),'text/plain');
+  } else {
+    const comp=items.filter(q=>mxmlCheck(q).ok);
+    if(!comp.length){alert('Nessuna domanda compatibile con Moodle XML.');return;}
+    dl(`quiz_${suffix}_moodle.xml`,buildMoodleXML(comp),'application/xml');
+  }
+}
+function ce(v){const s=String(v??'');return/[,"\n]/.test(s)?`"${s.replace(/"/g,'""')}"`  :s;}
+
+// Download nativo del browser: i file escono con il nome e l'estensione originali (.gift, .xml…).
+async function dl(name, c, t) {
+  try {
+    const blob = c instanceof Blob ? c : new Blob([c], {type: t});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1500);
+  } catch(e) {
+    if (typeof c === 'string') dlFallback(name, c);
+    else toast('Download non riuscito: ' + (e?.message || 'errore'));
+  }
+}
+
+// ── IMPOSTAZIONI E CHIAMATE ALL'API ANTHROPIC ─────────────────────────
+// La chiave resta in questo browser (localStorage) e viene inviata solo ad api.anthropic.com.
+const MODELS=[
+  {id:'claude-opus-5-5',label:'Claude Opus 5.5 — qualità massima'},
+  {id:'claude-sonnet-5-5',label:'Claude Sonnet 5.5 — equilibrato (consigliato)'},
+  {id:'claude-haiku-5-5',label:'Claude Haiku 5.5 — rapido ed economico'},
+];
+const SETTINGS_DEFAULTS={genModel:'claude-sonnet-5-5',refModel:'claude-haiku-5-5',maxChars:30000};
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);return true;}catch(e){return false;}}
+function getApiKey(){return lsGet('mqb.apiKey')||'';}
+function getSettings(){let s={};try{s=JSON.parse(lsGet('mqb.settings')||'{}');}catch(e){}return{...SETTINGS_DEFAULTS,...s};}
+async function callClaude(userContent,{system='',model,maxTokens=4000}={}){
+  const key=getApiKey();
+  if(!key)throw new Error('Chiave API non impostata');
+  let resp;
+  try{
+    resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:model||getSettings().genModel,max_tokens:maxTokens,...(system?{system}:{}),messages:[{role:'user',content:userContent}]})
+    });
+  }catch(e){throw new Error('Connessione non riuscita: controlla la rete.');}
+  let data=null;try{data=await resp.json();}catch(e){}
+  if(!resp.ok){
+    const m=data?.error?.message||'';
+    if(resp.status===401)throw new Error('Chiave API non valida (401). Controllala in ⚙ Impostazioni.');
+    if(resp.status===403)throw new Error('Chiave senza permessi per questo modello (403).');
+    if(resp.status===404)throw new Error('Modello non disponibile per questa chiave (404): scegline un altro in ⚙ Impostazioni.');
+    if(resp.status===429)throw new Error('Limite di richieste raggiunto (429): attendi qualche istante.');
+    if(resp.status===529||resp.status>=500)throw new Error(`Servizio Anthropic momentaneamente sovraccarico (${resp.status}): riprova.`);
+    throw new Error(`Errore API ${resp.status}${m?': '+m:''}`);
+  }
+  return (data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+}
+function openSettings(){
+  const s=getSettings(),key=getApiKey();
+  const opt=sel=>MODELS.map(m=>`<option value="${m.id}"${m.id===sel?' selected':''}>${esc(m.label)}</option>`).join('');
+  const d=document.createElement('div');d.id='settings-modal';d.className='mo';
+  d.onclick=e=>{if(e.target===d)d.remove();};
+  d.innerHTML=`<div class="mo-box" style="width:min(560px,94vw)">
+    <div class="mo-hd"><span>⚙ Impostazioni</span><button class="sm be" onclick="document.getElementById('settings-modal').remove()">✕</button></div>
+    <div class="mo-body"><div class="pdf-cfg">
+      <div class="pdf-field full"><label>Chiave API Anthropic</label>
+        <div style="display:flex;gap:.35rem"><input type="password" id="set-key" value="${esc(key)}" placeholder="sk-ant-…" autocomplete="off" style="flex:1;font:.84rem/1.4 Consolas,monospace;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px">
+        <button class="sm be" onclick="const i=document.getElementById('set-key');i.type=i.type==='password'?'text':'password'">👁</button></div>
+        <span class="hint">Si crea su console.anthropic.com → API Keys. Resta salvata solo in questo browser e viene inviata solo ad api.anthropic.com. L'uso è fatturato a consumo sull'account Console.</span>
+      </div>
+      <div class="pdf-row">
+        <div class="pdf-field"><label>Modello per generare le domande</label><select id="set-gen">${opt(s.genModel)}</select></div>
+        <div class="pdf-field"><label>Modello per rilevare il riferimento</label><select id="set-ref">${opt(s.refModel)}</select></div>
+      </div>
+      <div class="pdf-field"><label>Caratteri della fonte inviati</label>
+        <select id="set-chars">${[9000,30000,60000,120000].map(n=>`<option value="${n}"${n===s.maxChars?' selected':''}>${n.toLocaleString('it-IT')}${n===30000?' (consigliato)':''}</option>`).join('')}</select>
+        <span class="hint">Più testo = domande che coprono più capitoli, ma costo maggiore per ogni generazione.</span>
+      </div>
+      <div id="set-test" class="hint"></div>
+      <div style="border-top:1px dashed var(--border);padding-top:.6rem">
+        <div class="pdf-field full"><label>Dati salvati</label>
+          <span class="hint">La banca domande si salva automaticamente in questo browser. Per spostarla su un altro computer usa ⬇ JSON e poi «Importa JSON».</span>
+          <div style="display:flex;gap:.35rem;margin-top:.3rem;flex-wrap:wrap">
+            <button class="sm bj" onclick="document.getElementById('json-import').click()">⬆ Importa JSON</button>
+            <button class="sm bd" onclick="forgetKey()">Rimuovi chiave da questo browser</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mo-foot"><span style="flex:1"></span>
+      <button class="bn" onclick="testKey()">Verifica chiave</button>
+      <button class="bs" onclick="saveSettings()">✓ Salva</button></div>
+  </div>`;
+  document.body.appendChild(d);
+}
+function readSettingsForm(){
+  return{key:document.getElementById('set-key').value.trim(),
+    s:{genModel:document.getElementById('set-gen').value,refModel:document.getElementById('set-ref').value,maxChars:parseInt(document.getElementById('set-chars').value)}};
+}
+function saveSettings(){
+  const {key,s}=readSettingsForm();
+  const ok=lsSet('mqb.apiKey',key||null)&&lsSet('mqb.settings',JSON.stringify(s));
+  document.getElementById('settings-modal')?.remove();
+  toast(ok?'Impostazioni salvate.':'Impossibile salvare: il browser blocca l\'archiviazione locale.');
+}
+async function testKey(){
+  const {key,s}=readSettingsForm(),out=document.getElementById('set-test');
+  if(!key){out.textContent='Inserisci prima la chiave.';out.style.color='var(--warn)';return;}
+  const prev=getApiKey();lsSet('mqb.apiKey',key);
+  out.textContent='Verifica in corso…';out.style.color='';
+  try{await callClaude('Rispondi solo: OK',{model:s.refModel,maxTokens:5});out.textContent='✓ Chiave valida e modello raggiungibile.';out.style.color='var(--ok)';}
+  catch(e){out.textContent='✗ '+e.message;out.style.color='#c62828';}
+  finally{lsSet('mqb.apiKey',prev||null);}
+}
+function forgetKey(){lsSet('mqb.apiKey',null);const i=document.getElementById('set-key');if(i)i.value='';toast('Chiave rimossa da questo browser.');}
+
+// ── PERSISTENZA LOCALE DELLA BANCA ────────────────────────────────────
+let persistOk=true;
+function persistState(){
+  if(!persistOk)return;
+  persistOk=lsSet('mqb.state',JSON.stringify({v:1,qs,uid,examSelection:[...examSelection],zipNaming}));
+  if(!persistOk)toast('Attenzione: il salvataggio automatico non è disponibile (spazio o permessi del browser).',7000);
+}
+function loadState(){
+  try{
+    const st=JSON.parse(lsGet('mqb.state')||'null');
+    if(!st||!Array.isArray(st.qs))return;
+    qs=st.qs;uid=Math.max(st.uid||1,...qs.map(q=>parseInt(String(q.id).replace(/\D/g,''))+1||1));
+    examSelection=new Set((st.examSelection||[]).filter(id=>qs.some(q=>q.id===id)));
+    if(st.zipNaming)zipNaming={...zipNaming,...st.zipNaming};
+  }catch(e){}
+}
+function importJSONFile(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const arr=JSON.parse(e.target.result);
+      if(!Array.isArray(arr))throw new Error('il file non contiene un elenco di domande');
+      const ok=arr.filter(q=>q&&TYPES.includes(q.type)&&String(q.prompt||'').trim());
+      if(!ok.length)throw new Error('nessuna domanda riconosciuta');
+      ok.forEach(q=>{delete q.aikenCompatible;delete q.giftCompatible;delete q.mxmlCompatible;const m=META_DEFAULTS();for(const k in m)if(q[k]===undefined)q[k]=m[k];q.id='q'+(uid++);qs.push(q);});
+      document.getElementById('settings-modal')?.remove();
+      render();toast(`Importate ${ok.length} domande${arr.length>ok.length?` (${arr.length-ok.length} scartate)`:''}.`);
+    }catch(err){toast('Importazione non riuscita: '+err.message,6000);}
+  };
+  r.readAsText(file);
+  document.getElementById('json-import').value='';
+}
+
+// ── INSTALLAZIONE COME APP ────────────────────────────────────────────
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=document.getElementById('install-btn');if(b)b.style.display='';});
+window.addEventListener('appinstalled',()=>{deferredInstall=null;const b=document.getElementById('install-btn');if(b)b.style.display='none';toast('App installata.');});
+async function installApp(){if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice.catch(()=>{});deferredInstall=null;document.getElementById('install-btn').style.display='none';}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+
+// alert() è disattivato nel frame: lo sostituisco con un avviso in pagina.
+function toast(msg,ms=4200){
+  let box=document.getElementById('toast-box');
+  if(!box){box=document.createElement('div');box.id='toast-box';box.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:6px;align-items:center;max-width:min(560px,92vw)';document.body.appendChild(box);}
+  const d=document.createElement('div');
+  d.style.cssText='background:#1a1a2e;color:#fff;padding:.55rem .9rem;border-radius:8px;font-size:.84rem;line-height:1.4;box-shadow:0 4px 18px rgba(0,0,0,.25)';
+  d.textContent=msg;box.appendChild(d);setTimeout(()=>d.remove(),ms);
+}
+function alert(m){toast(String(m));}
+
+// Fallback: mostra il contenuto in un modal con copia negli appunti
+function dlFallback(name, content) {
+  const old = document.getElementById('dl-fb'); if(old) old.remove();
+  const d = document.createElement('div'); d.id = 'dl-fb';
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:999';
+  d.innerHTML = `
+    <div style="background:#fff;border-radius:8px;padding:1.1rem;width:min(620px,93vw);max-height:82vh;display:flex;flex-direction:column;gap:.7rem;box-shadow:0 8px 32px rgba(0,0,0,.22)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <b style="font-size:.88rem">📋 ${esc(name)}</b>
+        <button onclick="document.getElementById('dl-fb').remove()" style="background:#eee;border:none;border-radius:6px;padding:.28rem .6rem;cursor:pointer;font-size:.82rem">✕ Chiudi</button>
+      </div>
+      <p style="font-size:.78rem;color:#667788">Il download diretto non è supportato in questo contesto. Copia il contenuto qui sotto.</p>
+      <textarea id="dl-fb-ta" readonly style="flex:1;min-height:220px;font:11.5px/1.5 Consolas,monospace;padding:.5rem;border:1px solid #dde3ec;border-radius:4px;resize:vertical;background:#1e1e2e;color:#cdd6f4">${esc(content)}</textarea>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('dl-fb-ta').value).then(()=>{this.textContent='✓ Copiato!';setTimeout(()=>this.textContent='📋 Copia negli appunti',1800)}).catch(()=>document.getElementById('dl-fb-ta').select())" style="background:#3d5a99;color:#fff;border:none;border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-weight:600;font-size:.84rem">📋 Copia negli appunti</button>
+    </div>`;
+  document.body.appendChild(d);
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function setTab(t,el){activeTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');rPanel();}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function get(id){return qs.find(q=>q.id===id);}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function L(i){return String.fromCharCode(65+i);}
+
+// ── GENERA DA FONTE ───────────────────────────────────────────────────
+let srcText='',srcName='',pendingQs=[],pendingSelected=new Set(),cfgN=10,cfgLang='auto';
+let srcTitle=''; // titolo/riferimento della fonte, incluso come citazione in ogni domanda generata
+let reviewPage=0; // indice corrente nello slider di review delle domande generate
+const LANGS=[{id:'auto',label:'Auto'},{id:'it',label:'🇮🇹 Italiano'},{id:'en',label:'🇬🇧 English'},{id:'fr',label:'🇫🇷 Français'},{id:'de',label:'🇩🇪 Deutsch'},{id:'es',label:'🇪🇸 Español'}];
+const LANG_INSTR={auto:'Usa la stessa lingua del documento sorgente.',it:'Genera tutte le domande in italiano.',en:'Generate all questions in English.',fr:'Génère toutes les questions en français.',de:'Generiere alle Fragen auf Deutsch.',es:'Genera todas las preguntas en español.'};
+const TF_DEFAULTS={auto:['Vero','Falso'],it:['Vero','Falso'],en:['True','False'],fr:['Vrai','Faux'],de:['Wahr','Falsch'],es:['Verdadero','Falso']};
+const SOURCE_WORD={it:'Fonte',en:'Source',fr:'Source',de:'Quelle',es:'Fuente'};
+function openGen(){document.getElementById('gen-modal').style.display='flex';showGenStep('upload');}
+function closeGen(){document.getElementById('gen-modal').style.display='none';srcText='';srcName='';pendingQs=[];pendingSelected=new Set();document.getElementById('src-file').value='';}
+function setGenHtml(b,f=''){document.getElementById('gen-content').innerHTML=`<div class="mo-body">${b}</div>${f?`<div class="mo-foot">${f}</div>`:''}`;}
+function showGenStep(step){
+  if(step==='upload'){
+    setGenHtml(`<div class="dz" id="dz" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');handleSrcFile(event.dataTransfer.files[0])"><div class="dz-icon">📄</div><p><strong>Trascina PDF o file di testo</strong></p><button class="bp" style="margin:.5rem 0" onclick="document.getElementById('src-file').click()">Scegli file</button><p class="dz-sub">PDF · TXT · MD</p></div><div class="div-or">oppure</div><label class="paste-lbl">Incolla il testo</label><textarea class="paste-ta" id="paste-src" placeholder="Incolla qui il testo del paper…" rows="5"></textarea>`,`<button class="bn" onclick="closeGen()">Annulla</button><button class="bs" onclick="goToConfig()">Continua →</button>`);
+  } else if(step==='config'){
+    setGenHtml(`<div class="src-chip">📄 <b>${esc(srcName)}</b><span class="sc">${srcText.length.toLocaleString()} car.</span></div>
+      <div class="cfg-row">
+        <span class="cfg-lbl">Titolo / riferimento fonte <span class="hint">(citato in ogni domanda generata)</span></span>
+        <div style="display:flex;gap:.35rem;align-items:center;margin-top:.15rem">
+          <input type="text" id="cfg-srctitle" value="${esc(detectedRef.text&&detectedRef.key===srcKey()?detectedRef.text:srcName)}" placeholder="es. Benanti P. (2024). Intelligenza artificiale e società. Laterza." oninput="srcTitleTouched=true" style="flex:1;font:.87rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px">
+          <button class="sm be" id="ref-detect-btn" onclick="detectSourceRef(true)" title="Rileva il riferimento leggendo la fonte">🔍 Rileva</button>
+        </div>
+        <div class="hint" id="ref-detect-status" style="margin-top:.2rem"></div>
+      </div>
+      <div class="cfg-row"><span class="cfg-lbl">Numero domande</span><div class="pill-row">${[5,8,10,15,20].map(n=>`<button class="pill${n===cfgN?' on':''}" data-n="${n}" onclick="setCfgN(${n})">${n}</button>`).join('')}</div></div>
+      <div class="cfg-row"><span class="cfg-lbl">Tipi</span><div class="cfg-types"><label><input type="checkbox" id="ct-mcqs" checked> MCQ singola</label><label><input type="checkbox" id="ct-mcqm"> MCQ multipla</label><label><input type="checkbox" id="ct-tf"> Vero/Falso</label><label><input type="checkbox" id="ct-sa"> Risposta breve</label></div></div>
+      <div class="cfg-row"><span class="cfg-lbl">Lingua</span><div class="pill-row">${LANGS.map(l=>`<button class="pill${l.id===cfgLang?' on':''}" data-l="${l.id}" onclick="setCfgLang('${l.id}')">${l.label}</button>`).join('')}</div></div>
+      <div class="cfg-row"><span class="cfg-lbl">Focus <span class="hint">(opzionale)</span></span><input type="text" id="cfg-focus" placeholder="es. governance algoritmica · cap. 3…" style="width:100%;font:.85rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px"></div>`,
+      `<button class="bn" onclick="showGenStep('upload')">← Indietro</button><button class="bs" onclick="startGeneration()">Genera →</button>`);
+    if(detectedRef.key!==srcKey())srcTitleTouched=false;
+    detectSourceRef(false);
+  } else if(step==='generating'){
+    setGenHtml(`<div class="spin-wrap"><div class="spin"></div><div class="spin-msg" id="spin-msg">Generazione in corso…</div><p class="spin-sub">Il modello legge la fonte e costruisce le domande</p></div>`);
+  }
+}
+function goToConfig(){const p=document.getElementById('paste-src');if(p?.value.trim().length>=50){srcText=p.value.trim();srcName='testo incollato';}if(!srcText||srcText.length<50){alert('Carica un file o incolla almeno 50 caratteri.');return;}showGenStep('config');}
+
+// ── RILEVAMENTO AUTOMATICO DEL RIFERIMENTO BIBLIOGRAFICO ─────────────
+// Legge l'inizio della fonte (frontespizio, intestazione, abstract) e chiede a Claude
+// un riferimento in stile autore-data. Non sovrascrive mai un campo modificato a mano.
+let srcTitleTouched=false,detectedRef={key:'',text:''},refDetecting=false;
+function srcKey(){return srcName+'|'+srcText.length+'|'+srcText.slice(0,200);}
+function setRefStatus(msg,color){const s=document.getElementById('ref-detect-status');if(s){s.textContent=msg;s.style.color=color||'';}}
+async function detectSourceRef(manual=false){
+  if(!srcText||refDetecting)return;
+  const key=srcKey();
+  if(!manual&&detectedRef.key===key){if(detectedRef.text)setRefStatus('✓ Riferimento rilevato dalla fonte — verificalo prima di generare.','var(--ok)');return;}
+  const inp=document.getElementById('cfg-srctitle'),btn=document.getElementById('ref-detect-btn');
+  if(!getApiKey()){setRefStatus('Per il rilevamento automatico imposta la chiave API in ⚙ Impostazioni.','var(--warn)');return;}
+  refDetecting=true;if(btn){btn.disabled=true;btn.textContent='⏳';}
+  setRefStatus('Lettura della fonte per individuare il riferimento…');
+  const head=srcText.slice(0,6000),tail=srcText.length>9000?srcText.slice(-1500):'';
+  const prompt=`Sei un bibliotecario accademico. Dal testo seguente (inizio${tail?' e fine':''} di un documento) ricava il riferimento bibliografico della fonte stessa, non delle opere che cita.
+Formato: Cognome I. (Anno). Titolo. Rivista/Editore, eventuali volume(numero), pagine. Per più autori: Cognome I., Cognome I. Oltre tre autori: primo autore et al.
+Usa SOLO informazioni presenti nel testo; ometti gli elementi che non trovi, senza inventarli né usare segnaposto.
+Se non riesci a individuare almeno il titolo con ragionevole certezza, rispondi esattamente: NESSUNO
+Rispondi con il solo riferimento, su una riga, senza virgolette né commenti.
+
+--- INIZIO DOCUMENTO ---
+${head}${tail?`\n[…]\n--- FINE DOCUMENTO ---\n${tail}`:''}`;
+  try{
+    const res={text:await callClaude(prompt,{model:getSettings().refModel,maxTokens:400})};
+    let ref=String(res?.text||'').trim().split('\n').map(s=>s.trim()).filter(Boolean)[0]||'';
+    ref=ref.replace(/^["«“']+|["»”']+$/g,'').replace(/^(riferimento|reference)\s*:\s*/i,'').trim();
+    if(!ref||/^NESSUNO\b/i.test(ref)||ref.length>400){
+      detectedRef={key,text:''};
+      setRefStatus('Non sono riuscito a individuare un riferimento affidabile: inseriscilo a mano.','var(--warn)');
+    }else{
+      detectedRef={key,text:ref};
+      const cur=document.getElementById('cfg-srctitle');
+      if(cur&&(!srcTitleTouched||manual)){cur.value=ref;if(manual)srcTitleTouched=false;}
+      setRefStatus(srcTitleTouched&&!manual?`Rilevato: ${ref} — il tuo testo non è stato sostituito (usa 🔍 Rileva per applicarlo).`:'✓ Riferimento rilevato dalla fonte — verificalo prima di generare.','var(--ok)');
+    }
+  }catch(e){
+    setRefStatus('Rilevamento non riuscito ('+(e?.message||'errore')+'): inserisci il riferimento a mano o riprova.','var(--warn)');
+  }finally{
+    refDetecting=false;
+    const b=document.getElementById('ref-detect-btn');if(b){b.disabled=false;b.textContent='🔍 Rileva';}
+  }
+}
+function setCfgN(n){cfgN=n;document.querySelectorAll('[data-n]').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.n)===n));}
+function setCfgLang(l){cfgLang=l;document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',b.dataset.l===l));}
+async function handleSrcFile(file){if(!file)return;srcName=file.name;const isPDF=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');if(isPDF){showGenStep('generating');document.getElementById('spin-msg').textContent='Caricamento PDF.js…';try{await loadPDFJS();document.getElementById('spin-msg').textContent=`Lettura "${file.name}"…`;srcText=await extractPDFText(file);if(!srcText)throw new Error('Nessun testo (PDF potrebbe essere una scansione).');showGenStep('config');}catch(err){showGenError(err.message);}}else{const r=new FileReader();r.onload=e=>{srcText=e.target.result.trim();showGenStep('config');};r.onerror=()=>showGenError('Errore lettura.');r.readAsText(file);}}
+async function startGeneration(){const types=[];if(document.getElementById('ct-mcqs')?.checked)types.push('mcq_single');if(document.getElementById('ct-mcqm')?.checked)types.push('mcq_multiple');if(document.getElementById('ct-tf')?.checked)types.push('true_false');if(document.getElementById('ct-sa')?.checked)types.push('short_answer');if(!types.length){alert('Seleziona almeno un tipo.');return;}const focus=document.getElementById('cfg-focus')?.value?.trim()||'';
+  srcTitle=(document.getElementById('cfg-srctitle')?.value?.trim()||srcName).trim();
+  showGenStep('generating');try{await generateQuestions(cfgN,types,focus,cfgLang,srcTitle);}catch(err){showGenError(err.message||'Errore imprevisto.');}}
+async function generateQuestions(n,types,focus,lang,sourceTitle){
+  const srcWord = SOURCE_WORD[lang]; // undefined per 'auto': il modello sceglierà la parola corretta
+  let citationInstr = '';
+  if (sourceTitle) {
+    citationInstr = srcWord
+      ? `\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con — (${srcWord}: ${sourceTitle}) — incluse le parentesi tonde. Non omettere mai questa citazione in nessuna domanda.`
+      : `\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con la citazione della fonte tra parentesi tonde, usando la traduzione corretta della parola "Source" nella lingua in cui stai scrivendo le domande (es. "Fonte" in italiano, "Source" in inglese, "Source" in francese, "Quelle" in tedesco, "Fuente" in spagnolo). Titolo della fonte: ${sourceTitle}. Non omettere mai questa citazione.`;
+  }
+  const system=`Sei un esperto di didattica universitaria. Genera esattamente ${n} domande per un quiz basate ESCLUSIVAMENTE sul documento fornito.\nTipi (distribuisci equamente): ${types.map(t=>TYPE_LABEL[t]).join(', ')}.${focus?`\nFocus: "${focus}".`:''}\n${LANG_INSTR[lang]||LANG_INSTR.auto}${citationInstr}\nCriteri: concetti chiave, opzioni MCQ plausibili, T/F non banali, risposte brevi verificabili.\nRestituisci SOLO un array JSON. Formato oggetto (null per campi non applicabili):\n{"type":"mcq_single"|"mcq_multiple"|"true_false"|"short_answer","prompt":"...","opts":["..."],"correct":0,"corrects":[0,1],"answer":"..."}`;
+  if(!getApiKey())throw new Error('Chiave API non impostata. Aprila da ⚙ Impostazioni e riprova.');
+  const rawText=await callClaude(`Documento:\n\n${srcText.slice(0,getSettings().maxChars)}`,{system,model:getSettings().genModel,maxTokens:8000});
+  const questions=extractJSONArray(rawText);
+  if(!questions?.length)throw new Error('Risposta AI non JSON valido. Riprova.');
+  pendingQs=questions.map(q=>normalizeQ(q,lang)).filter(Boolean);
+  if(!pendingQs.length)throw new Error('Nessuna domanda valida estratta.');
+  pendingSelected=new Set(pendingQs.map((_,i)=>i));showGenReview();
+}
+function normalizeQ(q,lang){
+  if(!q||!String(q.prompt||'').trim())return null;
+  const type=String(q.type||''),prompt=String(q.prompt).trim(),m=META_DEFAULTS();
+  if(lang&&lang!=='auto'){m.source_language=lang;m.output_language=lang;}
+  if(type==='mcq_single'){const opts=Array.isArray(q.opts)?q.opts.map(String):['','',''];if(opts.length<2)return null;return{type,prompt,opts,correct:Math.max(0,Math.min(Math.round(Number(q.correct??0)),opts.length-1)),...m};}
+  if(type==='mcq_multiple'){const opts=Array.isArray(q.opts)?q.opts.map(String):['','',''];if(opts.length<2)return null;const corrects=[...new Set((Array.isArray(q.corrects)?q.corrects:[0]).map(Number).filter(c=>c>=0&&c<opts.length))];if(!corrects.length||corrects.length>=opts.length)return null;return{type,prompt,opts,corrects,...m};}
+  if(type==='true_false'){const dfOpts=TF_DEFAULTS[lang]||TF_DEFAULTS.auto;const opts=Array.isArray(q.opts)&&q.opts.length===2&&q.opts.every(o=>String(o).trim())?q.opts.map(String):dfOpts;return{type,prompt,opts,correct:Number(q.correct??0)===1?1:0,...m};}
+  if(type==='short_answer'){const answer=String(q.answer||'').trim();if(!answer)return null;return{type,prompt,answer,...m};}
+  return null;
+}
+function showGenReview(){ reviewPage=0; renderReviewPage(); }
+
+function renderReviewPage(){
+  const n=pendingQs.length, q=pendingQs[reviewPage];
+  if(!q) return;
+  const sel=pendingSelected.size, isSel=pendingSelected.has(reviewPage);
+  const ak=aikenCheck(q),gt=giftCheck(q),mx=mxmlCheck(q);
+  let qBody='';
+  if(q.type==='short_answer'){
+    qBody=`<div class="sa-ans">${esc(q.answer||'(vuota)')}</div>`;
+  } else {
+    const multi=q.type==='mcq_multiple',cs=multi?new Set(q.corrects||[]):null;
+    qBody=`<ul class="opts">${(q.opts||[]).map((o,j)=>{
+      const cor=multi?cs.has(j):j===q.correct;
+      return`<li class="opt${cor?' cor':''}"><span class="lt">${L(j)}.</span>${esc(o)}</li>`;
+    }).join('')}</ul>`;
+  }
+  const dots=pendingQs.map((_,i)=>
+    `<span class="rev-dot${i===reviewPage?' cur':''}${pendingSelected.has(i)?' sel':''}"
+      title="Domanda ${i+1}${pendingSelected.has(i)?' ✓':' ○'}" onclick="goReviewPage(${i})"></span>`
+  ).join('');
+  setGenHtml(`
+    <div class="rev-topbar">
+      <span class="rev-selcount">${sel} / ${n} selezionate</span>
+      <div style="display:flex;gap:.3rem;margin-left:auto;flex-wrap:wrap">
+        <button class="sm bn" onclick="closeGen()">Annulla</button>
+        <button class="sm bn" onclick="showGenStep('config')">↺ Rigenera</button>
+        <button class="sm bs" onclick="doImport()">✓ Importa (${sel})</button>
+      </div>
+    </div>
+    <div class="rev-navbar">
+      <button class="sm be" onclick="goReviewPage(${reviewPage-1})" ${reviewPage===0?'disabled':''}>◀ Prec</button>
+      <span class="rev-pos">${reviewPage+1} / ${n}</span>
+      <button class="sm be" onclick="goReviewPage(${reviewPage+1})" ${reviewPage===n-1?'disabled':''}>Succ ▶</button>
+    </div>
+    <div class="rev-slide${isSel?'':' skip'}">
+      <div class="rev-slide-hd">
+        <input type="checkbox" ${isSel?'checked':''} onchange="togglePendingPage(this.checked)"
+          style="width:14px;height:14px;accent-color:var(--ok);cursor:pointer;flex-shrink:0">
+        <span class="badge ${TYPE_CSS[q.type]||'bmcq'}">${TYPE_LABEL[q.type]||q.type}</span>
+        <span class="badge ${DIFF_CSS[q.difficulty||2]}">${DIFF_LABEL[q.difficulty||2]}</span>
+        <span class="badge ${ak.ok?'baok':'bano'}">${ak.ok?'✓':'✗'} AK</span>
+        <span class="badge ${gt.ok?'bgok':'bgno'}">${gt.ok?'✓':'✗'} GF</span>
+        <span class="badge ${mx.ok?'bxok':'bxno'}">${mx.ok?'✓':'✗'} XML</span>
+      </div>
+      <div class="rev-slide-prompt">${esc(q.prompt)}</div>
+      ${qBody}
+    </div>
+    <div class="rev-dots">${dots}</div>`);
+}
+
+function goReviewPage(i){
+  if(i<0||i>=pendingQs.length) return;
+  reviewPage=i; renderReviewPage();
+}
+function togglePendingPage(checked){
+  if(checked) pendingSelected.add(reviewPage);
+  else pendingSelected.delete(reviewPage);
+  renderReviewPage();
+}
+function togglePending(i,checked){if(checked)pendingSelected.add(i);else pendingSelected.delete(i);}
+function doImport(){if(!pendingSelected.size){alert('Seleziona almeno una domanda.');return;}const toAdd=[...pendingSelected].sort((a,b)=>a-b).map(i=>{const q=JSON.parse(JSON.stringify(pendingQs[i]));q.id='q'+(uid++);return q;});qs.push(...toAdd);const firstId=toAdd[0].id;closeGen();render();requestAnimationFrame(()=>document.getElementById('qc-'+firstId)?.scrollIntoView({behavior:'smooth',block:'center'}));}
+function showGenError(msg){setGenHtml(`<div class="err-box"><b>⚠ Errore</b>${esc(msg)}</div><div class="err-act"><button class="bn" onclick="showGenStep('upload')">← Nuova fonte</button>${srcText?`<button class="bp" onclick="showGenStep('config')">↩ Config</button>`:''}</div>`);}
+
+// ── JSON EXTRACTOR ────────────────────────────────────────────────────
+function extractJSONArray(text){if(!text)return null;try{const r=JSON.parse(text.trim());if(Array.isArray(r))return r;}catch(e){}const stripped=text.replace(/```(?:json)?\s*/gi,'').replace(/```/g,'').trim();try{const r=JSON.parse(stripped);if(Array.isArray(r))return r;}catch(e){}const src=stripped||text;const start=src.indexOf('[');if(start===-1)return null;let depth=0,end=-1;for(let i=start;i<src.length;i++){if(src[i]==='[')depth++;else if(src[i]===']'){depth--;if(depth===0){end=i;break;}}}if(end===-1)return null;try{const r=JSON.parse(src.slice(start,end+1));return Array.isArray(r)?r:null;}catch(e){return null;}}
+
+// ── PDF.js ────────────────────────────────────────────────────────────
+async function loadPDFJS(){if(window.pdfjsLib)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';res();};s.onerror=()=>rej(new Error('Impossibile caricare PDF.js.'));document.head.appendChild(s);});}
+async function extractPDFText(file){return new Promise((res,rej)=>{const reader=new FileReader();reader.onload=async e=>{try{const pdf=await pdfjsLib.getDocument({data:new Uint8Array(e.target.result)}).promise;let text='';for(let i=1;i<=Math.min(pdf.numPages,30);i++){const page=await pdf.getPage(i);const content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n';}res(text.trim());}catch(err){rej(err);}};reader.onerror=()=>rej(new Error('Errore lettura.'));reader.readAsArrayBuffer(file);});}
+
+// ── ZIP PACKAGING ─────────────────────────────────────────────────────
+let zipNaming={organization:'',course:'',module:'',assessmentType:'quiz',language:'it',version:'v1'};
+
+async function loadJSZip(){
+  if(window.JSZip)return;
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=res;s.onerror=()=>rej(new Error('Impossibile caricare JSZip dal CDN.'));
+    document.head.appendChild(s);
+  });
+}
+function buildBaseName(){
+  return[zipNaming.organization||'org',zipNaming.course||'course',zipNaming.module||'module',
+    zipNaming.assessmentType||'quiz',zipNaming.language||'it',zipNaming.version||'v1']
+    .map(p=>p.trim().replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'').toLowerCase())
+    .filter(Boolean).join('_');
+}
+function getDateStr(){return new Date().toISOString().slice(0,10);}
+function formatBytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB';}
+function escX(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Content builders (shared between ZIP and future use)
+function buildCSVContent(items){
+  const mx=Math.max(0,...items.map(q=>(q.opts||[]).length));
+  const hdr=['id','type','prompt',...Array.from({length:mx},(_,i)=>`opt_${i+1}`),'correct_letter','answer','category','status','difficulty','exam_eligible','aiken_ok','gift_ok','mxml_ok'];
+  const rows=items.map(q=>{
+    const pad=[...(q.opts||[])];while(pad.length<mx)pad.push('');
+    let cl='';if(q.type==='mcq_multiple')cl=(q.corrects||[]).map(i=>L(i)).join(';');else if(q.correct!=null)cl=L(q.correct);
+    return[q.id,q.type,q.prompt,...pad,cl,q.answer||'',q.moodle_category_path||'',q.bank_status||'draft',q.difficulty||2,q.exam_eligible?'true':'false',aikenCheck(q).ok?'YES':'NO',giftCheck(q).ok?'YES':'NO',mxmlCheck(q).ok?'YES':'NO'].map(ce).join(',');
+  });
+  return[hdr.join(','),...rows].join('\n');
+}
+function buildAIKENContent(items){
+  const lines=[];items.forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});return lines.join('\n');
+}
+function buildHTMLTable(items,title){
+  const rows=items.map((q,i)=>{
+    let opts='';
+    if(q.type==='short_answer')opts=`<em>→ ${escX(q.answer)}</em>`;
+    else opts=`<ol type="A" style="margin:0;padding-left:16px">${(q.opts||[]).map((o,j)=>{const cor=q.type==='mcq_multiple'?(q.corrects||[]).includes(j):j===q.correct;return`<li${cor?' style="font-weight:700;color:#2e7d32"':''}>${escX(o)}</li>`;}).join('')}</ol>`;
+    return`<tr><td>${i+1}</td><td>${escX(TYPE_LABEL[q.type]||q.type)}</td><td>${escX(q.prompt)}</td><td>${opts}</td><td>${DIFF_LABEL[q.difficulty||2]}</td><td>${BS_LABEL[q.bank_status||'draft']}</td><td>${q.exam_eligible?'⭐':''}</td><td style="font-size:.8em">${escX(q.moodle_category_path||'—')}</td></tr>`;
+  }).join('');
+  return`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>${escX(title)}</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px;color:#1a1a2e}h1{color:#3d5a99;font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde3ec;padding:6px 8px;vertical-align:top;text-align:left}th{background:#3d5a99;color:#fff;font-size:12px}tr:nth-child(even){background:#f5f7fa}p{font-size:12px;color:#667}</style></head><body><h1>${escX(title)}</h1><p>Generato: ${new Date().toLocaleString('it-IT')} — Moodle Quiz Builder v1.6 | ${items.length} domande</p><table><thead><tr><th>#</th><th>Tipo</th><th>Domanda</th><th>Opzioni</th><th>Difficoltà</th><th>Stato</th><th>Esame</th><th>Categoria</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+}
+function buildTXTSummary(items,title){
+  const sep='='.repeat(Math.min(title.length,60));
+  const lines=[title,sep,`Generato: ${new Date().toLocaleString('it-IT')}`,`Domande: ${items.length}`,''];
+  items.forEach((q,i)=>{
+    lines.push(`${i+1}. [${TYPE_LABEL[q.type]||q.type}] ${q.prompt}`);
+    if(q.type==='short_answer')lines.push(`   Risposta: ${q.answer}`);
+    else(q.opts||[]).forEach((o,j)=>{const cor=q.type==='mcq_multiple'?(q.corrects||[]).includes(j):j===q.correct;lines.push(`   ${L(j)}. ${o}${cor?' ✓':''}`);});
+    lines.push(`   Difficoltà: ${DIFF_LABEL[q.difficulty||2]} | Stato: ${BS_LABEL[q.bank_status||'draft']}${q.exam_eligible?' | ⭐ Esame':''}`);
+    if(q.moodle_category_path)lines.push(`   Categoria: ${q.moodle_category_path}`);
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+function buildManifestJSON(items,scope){
+  const bt={},bs2={},bd={};
+  TYPES.forEach(t=>bt[t]=items.filter(q=>q.type===t).length);
+  Object.keys(BS_LABEL).forEach(s=>bs2[s]=items.filter(q=>(q.bank_status||'draft')===s).length);
+  [1,2,3].forEach(d=>bd[DIFF_LABEL[d]]=items.filter(q=>(q.difficulty||2)===d).length);
+  return{generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.6',scope,naming:{...zipNaming},
+    statistics:{total:items.length,by_type:bt,by_status:bs2,by_difficulty:bd,
+      aiken_compatible:items.filter(q=>aikenCheck(q).ok).length,
+      gift_compatible:items.filter(q=>giftCheck(q).ok).length,
+      mxml_compatible:items.filter(q=>mxmlCheck(q).ok).length,
+      exam_eligible:items.filter(q=>q.exam_eligible).length},
+    items:items.map(q=>({id:q.id,type:q.type,prompt_preview:q.prompt.slice(0,80)+(q.prompt.length>80?'…':''),
+      status:q.bank_status||'draft',difficulty:q.difficulty||2,exam_eligible:q.exam_eligible,
+      category:q.moodle_category_path||'',aiken_compatible:aikenCheck(q).ok,
+      gift_compatible:giftCheck(q).ok,mxml_compatible:mxmlCheck(q).ok}))};
+}
+function buildComplianceText(bankItems,examItems,allFiles){
+  const excl=allFiles.filter(f=>!f.included),incl=allFiles.filter(f=>f.included);
+  const lines=[
+    'COMPLIANCE REPORT','=================',
+    `Generato: ${new Date().toLocaleString('it-IT')}`,
+    `Tool: Moodle Quiz Builder v1.6`,`Naming base: ${buildBaseName()}`,'',
+    'BANCA DOMANDE','─────────────',
+    `Item totali (non rifiutati): ${bankItems.length}`,
+    `  Approvati   : ${bankItems.filter(q=>q.bank_status==='approved').length}`,
+    `  Revisionati : ${bankItems.filter(q=>q.bank_status==='reviewed').length}`,
+    `  Bozze       : ${bankItems.filter(q=>q.bank_status==='draft').length}`,
+    `  Ammissibili : ${bankItems.filter(q=>q.exam_eligible).length}`,
+    `Compatibilità formato:`,
+    `  AIKEN : ${bankItems.filter(q=>aikenCheck(q).ok).length}/${bankItems.length}`,
+    `  GIFT  : ${bankItems.filter(q=>giftCheck(q).ok).length}/${bankItems.length}`,
+    `  XML   : ${bankItems.filter(q=>mxmlCheck(q).ok).length}/${bankItems.length}`,'',
+    'PROVA FINALE','────────────',`Domande selezionate: ${examItems.length}`,
+  ];
+  if(examItems.length)TYPES.forEach(t=>lines.push(`  ${(TYPE_LABEL[t]||t).padEnd(14)}: ${examItems.filter(q=>q.type===t).length}`));
+  else lines.push('  (nessuna domanda selezionata)');
+  lines.push('','INCOMPATIBILITÀ PER FORMATO','───────────────────────────');
+  [['AIKEN',aikenCheck],['GIFT',giftCheck],['Moodle XML',mxmlCheck]].forEach(([lbl,fn])=>{
+    const ex=bankItems.filter(q=>!fn(q).ok);
+    if(ex.length){lines.push(`${lbl}:`);ex.forEach(q=>lines.push(`  [${q.id}] ${fn(q).r}`));}
+  });
+  lines.push('','FILE ESCLUSI DALLO ZIP','──────────────────────');
+  if(excl.length)excl.forEach(f=>lines.push(`  ${f.folder}/${f.filename}`+(f.reason?` — ${f.reason}`:'')));
+  else lines.push('  Nessun file escluso.');
+  lines.push('',`RIEPILOGO: ${incl.length} file inclusi · ${excl.length} esclusi`);
+  return lines.join('\n');
+}
+function buildREADMEImport(){
+  return`README — IMPORTAZIONE IN MOODLE\n================================\n\n1. Moodle XML (consigliato — tutti i tipi)\n   File: *_moodle.xml\n   → Banca domande > Importa > "Moodle XML format"\n\n2. GIFT (tutti i tipi)\n   File: *.gift\n   → Banca domande > Importa > "GIFT format"\n\n3. AIKEN (solo MCQ risposta singola)\n   File: *_aiken.txt\n   → Banca domande > Importa > "Aiken format"\n\n4. CSV — solo per revisione in foglio di calcolo.\n   Non è un formato di importazione Moodle nativo.\n\nAVVERTENZE\n----------\n- Crea la categoria di destinazione in Moodle prima di importare\n- Gli item con status "rejected" non sono inclusi negli export\n- I file XML includono le categorie definite per ogni item\n\nVersione Moodle consigliata: 3.9+\nGenerato da: Moodle Quiz Builder v1.6`;
+}
+function buildREADMEPackage(base,date,bankItems,examItems){
+  return`README — DESCRIZIONE PACCHETTO\n==============================\n\nNome: ${base}_package_${date}.zip\nGenerato: ${new Date().toLocaleString('it-IT')}\nTool: Moodle Quiz Builder v1.6\n\nNAMING CONVENTION\n-----------------\nOrganizzazione : ${zipNaming.organization||'(non specificata)'}\nCorso          : ${zipNaming.course||'(non specificato)'}\nModulo         : ${zipNaming.module||'(non specificato)'}\nTipo           : ${zipNaming.assessmentType}\nLingua         : ${zipNaming.language}\nVersione       : ${zipNaming.version}\n\nSTRUTTURA ZIP\n-------------\nquestion-bank/ — Banca domande (${bankItems.length} item non rifiutati)\nfinal-exam/    — Prova finale (${examItems.length} item selezionati)\nmanifests/     — Manifest JSON strutturati\ncompliance/    — Report di conformità e incompatibilità\nreadme/        — Documentazione, istruzioni, indice\n\nSTATISTICHE\n-----------\n${TYPES.map(t=>`${(TYPE_LABEL[t]||t).padEnd(16)}: ${bankItems.filter(q=>q.type===t).length} banca / ${examItems.filter(q=>q.type===t).length} prova`).join('\n')}\nAIKEN compatibili: ${bankItems.filter(q=>aikenCheck(q).ok).length}\nGIFT compatibili : ${bankItems.filter(q=>giftCheck(q).ok).length}\nXML compatibili  : ${bankItems.filter(q=>mxmlCheck(q).ok).length}`;
+}
+
+// ── ZIP BUILDER ───────────────────────────────────────────────────────
+function buildZIPContents(){
+  const base=buildBaseName(),date=getDateStr();
+  const bankItems=qs.filter(q=>q.bank_status!=='rejected');
+  const examItems=qs.filter(q=>examSelection.has(q.id));
+  const files=[];
+  const add=(folder,filename,content,reason='')=>
+    files.push({folder,filename,content:content||'',included:!!(content&&!reason),reason:reason||''});
+
+  // question-bank
+  const B='question-bank';
+  add(B,`${base}_bank_${date}.json`,JSON.stringify(bankItems.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok})),null,2));
+  add(B,`${base}_bank_${date}.csv`,buildCSVContent(bankItems));
+  const aiB=bankItems.filter(q=>aikenCheck(q).ok);
+  aiB.length?add(B,`${base}_bank_${date}_aiken.txt`,buildAIKENContent(aiB)):add(B,`${base}_bank_${date}_aiken.txt`,'','Nessuna domanda AIKEN compatibile');
+  const giB=bankItems.filter(q=>giftCheck(q).ok);
+  if(giB.length){const l=['// GIFT — Moodle Quiz Builder v1.6',''];giB.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(B,`${base}_bank_${date}.gift`,l.join('\n'));}
+  else add(B,`${base}_bank_${date}.gift`,'','Nessuna domanda GIFT compatibile');
+  const xB=bankItems.filter(q=>mxmlCheck(q).ok);
+  xB.length?add(B,`${base}_bank_${date}_moodle.xml`,buildMoodleXML(xB)):add(B,`${base}_bank_${date}_moodle.xml`,'','Nessuna domanda XML compatibile');
+  bankItems.length?add(B,`${base}_bank_${date}.html`,buildHTMLTable(bankItems,'Banca Domande')):add(B,`${base}_bank_${date}.html`,'','Banca vuota');
+  bankItems.length?add(B,`${base}_bank_${date}.txt`,buildTXTSummary(bankItems,'Banca Domande')):add(B,`${base}_bank_${date}.txt`,'','Banca vuota');
+
+  // final-exam
+  const E='final-exam';
+  if(examItems.length){
+    add(E,`${base}_exam_${date}.json`,JSON.stringify(examItems.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok})),null,2));
+    add(E,`${base}_exam_${date}.csv`,buildCSVContent(examItems));
+    const aiE=examItems.filter(q=>aikenCheck(q).ok);
+    aiE.length?add(E,`${base}_exam_${date}_aiken.txt`,buildAIKENContent(aiE)):add(E,`${base}_exam_${date}_aiken.txt`,'','Nessuna domanda AIKEN nella prova');
+    const giE=examItems.filter(q=>giftCheck(q).ok);
+    if(giE.length){const l=['// GIFT — prova finale',''];giE.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(E,`${base}_exam_${date}.gift`,l.join('\n'));}
+    else add(E,`${base}_exam_${date}.gift`,'','Nessuna domanda GIFT nella prova');
+    const xE=examItems.filter(q=>mxmlCheck(q).ok);
+    xE.length?add(E,`${base}_exam_${date}_moodle.xml`,buildMoodleXML(xE)):add(E,`${base}_exam_${date}_moodle.xml`,'','Nessuna domanda XML nella prova');
+    add(E,`${base}_exam_${date}.html`,buildHTMLTable(examItems,'Prova Finale'));
+    add(E,`${base}_exam_${date}.txt`,buildTXTSummary(examItems,'Prova Finale'));
+  } else {
+    files.push({folder:E,filename:'(vuoto)',content:'',included:false,reason:'Nessuna domanda selezionata per la Prova Finale'});
+  }
+
+  // manifests
+  add('manifests',`manifest-bank_${date}.json`,JSON.stringify(buildManifestJSON(bankItems,'bank'),null,2));
+  if(examItems.length)add('manifests',`manifest-exam_${date}.json`,JSON.stringify(buildManifestJSON(examItems,'exam'),null,2));
+
+  // compliance (reads all files built so far)
+  add('compliance',`compliance-report_${date}.txt`,buildComplianceText(bankItems,examItems,files));
+
+  // readme
+  add('readme','README-import.txt',buildREADMEImport());
+  add('readme',`README-package_${date}.txt`,buildREADMEPackage(base,date,bankItems,examItems));
+  // index-manifest last (references all other files)
+  add('readme',`index-manifest_${date}.json`,JSON.stringify({
+    generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.6',
+    package:`${base}_package_${date}.zip`,naming:{...zipNaming},
+    files:files.filter(f=>f.included).map(f=>({path:`${f.folder}/${f.filename}`,size_bytes:f.content.length,format:f.filename.split('.').pop()})),
+    excluded:files.filter(f=>!f.included).map(f=>({path:`${f.folder}/${f.filename}`,reason:f.reason}))
+  },null,2));
+
+  return files;
+}
+
+// ── ZIP MODAL ─────────────────────────────────────────────────────────
+function showZIPModal(){document.getElementById('zip-modal').style.display='flex';renderZIPModal();}
+function closeZIPModal(){document.getElementById('zip-modal').style.display='none';}
+function renderZIPModal(){
+  document.getElementById('zip-body').innerHTML=`
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-bottom:.35rem">Naming convention</div>
+    <div class="zip-fields">
+      <div class="zf"><label>Organizzazione</label><input type="text" value="${esc(zipNaming.organization)}" placeholder="es. UniRoma" oninput="zipNaming.organization=this.value;updateZIPTree()"></div>
+      <div class="zf"><label>Corso</label><input type="text" value="${esc(zipNaming.course)}" placeholder="es. CS101" oninput="zipNaming.course=this.value;updateZIPTree()"></div>
+      <div class="zf"><label>Modulo</label><input type="text" value="${esc(zipNaming.module)}" placeholder="es. M3" oninput="zipNaming.module=this.value;updateZIPTree()"></div>
+      <div class="zf"><label>Tipo</label><select onchange="zipNaming.assessmentType=this.value;updateZIPTree()">${['quiz','exam','midterm','final','practice'].map(v=>`<option value="${v}"${zipNaming.assessmentType===v?' selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="zf"><label>Lingua</label><select onchange="zipNaming.language=this.value;updateZIPTree()">${['it','en','fr','de','es'].map(v=>`<option value="${v}"${zipNaming.language===v?' selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="zf"><label>Versione</label><input type="text" value="${esc(zipNaming.version)}" placeholder="v1" oninput="zipNaming.version=this.value;updateZIPTree()"></div>
+    </div>
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-bottom:.2rem">Nome base · <span style="text-transform:none;font-weight:400">${getDateStr()}</span></div>
+    <div class="zip-basename" id="zip-basename">${esc(buildBaseName())}</div>
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-top:.55rem;margin-bottom:.35rem">Anteprima contenuto ZIP</div>
+    <div id="zip-tree"></div>`;
+  updateZIPTree();
+}
+function updateZIPTree(){
+  const bn=document.getElementById('zip-basename');if(bn)bn.textContent=buildBaseName();
+  const tree=document.getElementById('zip-tree');if(!tree)return;
+  const files=buildZIPContents();
+  const folders=[...new Set(files.map(f=>f.folder))];
+  const inclCount=files.filter(f=>f.included).length;
+  const exclCount=files.filter(f=>!f.included).length;
+  const totalBytes=files.filter(f=>f.included).reduce((a,f)=>a+f.content.length,0);
+  const FI={'question-bank':'📁','final-exam':'📋','manifests':'📑','compliance':'🔍','readme':'📖'};
+  let html='';
+  folders.forEach(folder=>{
+    html+=`<div class="ztfolder">${FI[folder]||'📁'} ${folder}/</div>`;
+    files.filter(f=>f.folder===folder).forEach(f=>{
+      html+=`<div class="ztfile ${f.included?'ok':'skip'}">
+        <span style="min-width:1rem;font-size:.72rem">${f.included?'✓':'✗'}</span>
+        <span class="ztn">${esc(f.filename)}</span>
+        ${f.included?`<span class="ztsize">${formatBytes(f.content.length)}</span>`:''}
+        ${!f.included?`<span class="ztreason"> — ${esc(f.reason)}</span>`:''}
+      </div>`;
+    });
+  });
+  html+=`<div class="zip-summary-bar"><b>${inclCount}</b>&nbsp;file inclusi · <b style="color:var(--warn)">${exclCount}</b>&nbsp;esclusi · <b>${formatBytes(totalBytes)}</b>&nbsp;non compressi</div>`;
+  tree.innerHTML=html;
+  const fi=document.getElementById('zip-foot-info');
+  if(fi)fi.textContent=`📦 ${inclCount} file · ${formatBytes(totalBytes)} non compressi`;
+}
+async function generateAndDownloadZIP(){
+  const btn=document.getElementById('zip-dl-btn');
+  if(btn){btn.textContent='⏳ Generazione…';btn.disabled=true;}
+  try{
+    await loadJSZip();
+    const files=buildZIPContents();
+    const zip=new JSZip();
+    files.filter(f=>f.included&&f.content).forEach(f=>zip.folder(f.folder).file(f.filename,f.content));
+    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+    const zipName=`${buildBaseName()}_package_${getDateStr()}.zip`;
+    closeZIPModal();
+    await dl(zipName,blob,'application/zip');
+  }catch(e){
+    alert('Errore generazione ZIP: '+e.message);
+  }finally{
+    if(btn){btn.textContent='⬇ Scarica ZIP';btn.disabled=false;}
+  }
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────
+const PDF_LABELS = {
+  it:{ name:'Nome', surname:'Cognome', id:'Numero di matricola', date:'Data', score:'Punteggio / Voto', key:'CHIAVE DI RISPOSTA', copy:'COPIA PER LO STUDENTE' },
+  en:{ name:'Name', surname:'Surname', id:'Student ID', date:'Date', score:'Score / Grade', key:'ANSWER KEY', copy:'STUDENT COPY' },
+  fr:{ name:'Prénom', surname:'Nom', id:'Numéro étudiant', date:'Date', score:'Score / Note', key:'CORRIGÉ', copy:'COPIE ÉTUDIANT' },
+  de:{ name:'Vorname', surname:'Nachname', id:'Matrikelnummer', date:'Datum', score:'Punkte / Note', key:'LÖSUNGSSCHLÜSSEL', copy:'PRÜFUNGSEXEMPLAR' },
+  es:{ name:'Nombre', surname:'Apellido', id:'Número de matrícula', date:'Fecha', score:'Puntuación', key:'CLAVE DE RESPUESTAS', copy:'COPIA DEL ESTUDIANTE' },
+};
+const PDF_SIZES = ['A4','Letter','Legal','A3','A5'];
+
+function openPDFModal(){
+  document.getElementById('pdf-modal').style.display='flex';
+  const bankN=qs.filter(q=>q.bank_status!=='rejected').length;
+  const examN=examSelection.size;
+  document.getElementById('pdf-body').innerHTML=`
+    <div class="pdf-cfg">
+      <div class="pdf-field full">
+        <label>Titolo del test <span class="hint">(opzionale)</span></label>
+        <input type="text" id="pdf-title" placeholder="es. Esame di Etica dell'IA — A.A. 2024/25">
+      </div>
+      <div class="pdf-row">
+        <div class="pdf-field">
+          <label>Domande da esportare</label>
+          <div style="display:flex;flex-direction:column;gap:.32rem;margin-top:.18rem">
+            <label style="display:flex;align-items:center;gap:.38rem;font-size:.84rem;cursor:pointer">
+              <input type="radio" name="pdf-scope" value="bank" checked style="accent-color:var(--ok);width:13px;height:13px">
+              Banca domande <span style="font-size:.72rem;color:var(--muted)">(${bankN})</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.38rem;font-size:.84rem;cursor:pointer;${examN?'':'opacity:.4'}">
+              <input type="radio" name="pdf-scope" value="exam" ${examN?'':'disabled'} style="accent-color:var(--ok);width:13px;height:13px">
+              Prova finale <span style="font-size:.72rem;color:var(--muted)">(${examN} selezionate)</span>
+            </label>
+          </div>
+        </div>
+        <div class="pdf-field">
+          <label>Formato pagina</label>
+          <select id="pdf-format">${PDF_SIZES.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>
+        </div>
+        <div class="pdf-field">
+          <label>Lingua etichette</label>
+          <select id="pdf-lang">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+          </select>
+        </div>
+      </div>
+    </div>`;
+}
+function closePDFModal(){ document.getElementById('pdf-modal').style.display='none'; }
+
+function generatePDF(){
+  const scope = document.querySelector('input[name="pdf-scope"]:checked')?.value||'bank';
+  const format = document.getElementById('pdf-format')?.value||'A4';
+  const lang   = document.getElementById('pdf-lang')?.value||'it';
+  const title  = document.getElementById('pdf-title')?.value?.trim()||'';
+  const items  = scope==='exam' ? qs.filter(q=>examSelection.has(q.id)) : qs.filter(q=>q.bank_status!=='rejected');
+  if(!items.length){ alert('Nessuna domanda da esportare.'); return; }
+  const html = buildPDFHTML(items, {format, lang, title});
+  const base = (title||'quiz').replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').toLowerCase()||'quiz';
+  dl(base+'_print.html', html, 'text/html');
+  closePDFModal();
+}
+
+function buildPDFHTML(items, {format, lang, title}){
+  const lb = PDF_LABELS[lang]||PDF_LABELS.it;
+  const locales = {it:'it-IT',en:'en-US',fr:'fr-FR',de:'de-DE',es:'es-ES'};
+  const dateStr = new Date().toLocaleDateString(locales[lang]||'it-IT');
+  const nword   = {it:'domande',en:'questions',fr:'questions',de:'Fragen',es:'preguntas'}[lang]||'domande';
+
+  const header = ()=>`
+    <div class="student-header">
+      <div class="hrow">
+        <div class="hfield"><div class="hlbl">${escX(lb.surname)}</div><div class="hline"></div></div>
+        <div class="hfield"><div class="hlbl">${escX(lb.name)}</div><div class="hline"></div></div>
+        <div class="hfield narrow"><div class="hlbl">${escX(lb.id)}</div><div class="hline"></div></div>
+        <div class="hfield narrow"><div class="hlbl">${escX(lb.date)}</div><div class="hline"></div></div>
+        <div class="hfield narrow"><div class="hlbl">${escX(lb.score)}</div><div class="hline"></div></div>
+      </div>
+    </div>`;
+
+  const buildQ = (q, idx, showAns)=>{
+    let opts='';
+    if(q.type==='short_answer'){
+      opts = showAns
+        ? `<div class="opt correct">→ ${escX(q.answer||'')}</div>`
+        : `<div class="ans-blank"></div>`;
+    } else {
+      const multi=q.type==='mcq_multiple', cs=multi?new Set(q.corrects||[]):null;
+      opts=(q.opts||[]).map((o,j)=>{
+        const cor=showAns&&(multi?cs.has(j):j===q.correct);
+        return`<div class="opt${cor?' correct':''}"><span class="olbl">${L(j)}.</span><span class="osym">${multi?'☐':'○'}</span>${escX(o)}</div>`;
+      }).join('');
+    }
+    const dbadge = showAns ? `<span class="dbadge d${q.difficulty||2}">${DIFF_LABEL[q.difficulty||2]}</span>` : '';
+    return`<div class="question"><div class="qtext">${idx+1}. ${escX(q.prompt)}${dbadge}</div><div class="opts">${opts}</div></div>`;
+  };
+
+  const section = (label, showAns)=>`
+    <div class="sec-hd">
+      ${title?`<div class="exam-title">${escX(title)}</div>`:''}
+      <div class="sec-lbl">${escX(label)}</div>
+      <div class="sec-meta">${dateStr} — ${items.length} ${nword}</div>
+    </div>
+    ${header()}
+    ${items.map((q,i)=>buildQ(q,i,showAns)).join('')}`;
+
+  return`<!DOCTYPE html><html lang="${lang}"><head>
+<meta charset="UTF-8"><title>${escX(title||'Quiz')}</title>
+<style>
+@page{size:${format};margin:2cm 2.2cm}
+*{box-sizing:border-box}
+body{font-family:Georgia,'Times New Roman',serif;font-size:11pt;line-height:1.52;color:#000;margin:0;padding:0}
+.print-btn{position:fixed;top:10px;right:10px;background:#3d5a99;color:#fff;border:none;padding:8px 20px;cursor:pointer;border-radius:4px;font-size:12pt;font-weight:bold;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.print-btn:hover{background:#2d4a89}
+@media print{.print-btn{display:none}.pb{page-break-before:always}}
+.pb{page-break-before:always}
+.sec-hd{text-align:center;margin-bottom:16pt;padding-bottom:8pt;border-bottom:2pt solid #000}
+.exam-title{font-size:13pt;font-weight:bold;margin-bottom:3pt}
+.sec-lbl{font-size:15pt;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3pt}
+.sec-meta{font-size:9pt;color:#555}
+.student-header{border:1.5pt solid #444;padding:8pt 10pt 5pt;margin-bottom:16pt;border-radius:2pt}
+.hrow{display:flex;gap:10pt}
+.hfield{flex:1}.hfield.narrow{flex:.62}
+.hlbl{font-size:8pt;font-weight:bold;text-transform:uppercase;letter-spacing:.04em;color:#444;margin-bottom:1pt}
+.hline{border-bottom:1pt solid #333;height:17pt}
+.question{margin-bottom:12pt;page-break-inside:avoid}
+.qtext{font-size:11pt;font-weight:bold;margin-bottom:4pt}
+.opts{margin-left:12pt;display:flex;flex-direction:column;gap:2pt}
+.opt{font-size:10.5pt;display:flex;align-items:baseline;gap:4pt;padding:1.5pt 4pt;border-radius:2pt}
+.opt.correct{background:#c8e6c9;font-weight:bold}
+.olbl{min-width:14pt;font-weight:bold}.osym{min-width:12pt;font-family:monospace}
+.ans-blank{border-bottom:1pt solid #999;height:22pt;margin-top:4pt;width:80%}
+.dbadge{font-size:7.5pt;font-weight:bold;padding:1pt 4pt;border-radius:2pt;margin-left:5pt;vertical-align:middle}
+.d1{background:#c8e6c9;color:#1b5e20}.d2{background:#fff9c4;color:#e65100}.d3{background:#ffcdd2;color:#b71c1c}
+</style></head><body>
+<button class="print-btn" onclick="window.print()">🖨 Stampa / Salva PDF</button>
+${section(lb.key, true)}
+<div class="pb"></div>
+${section(lb.copy, false)}
+</body></html>`;
+}
+
+// ── DOCX EXPORT ───────────────────────────────────────────────────────
+async function generateDOCX(){
+  const scope  = document.querySelector('input[name="pdf-scope"]:checked')?.value||'bank';
+  const format = document.getElementById('pdf-format')?.value||'A4';
+  const lang   = document.getElementById('pdf-lang')?.value||'it';
+  const title  = document.getElementById('pdf-title')?.value?.trim()||'';
+  const items  = scope==='exam' ? qs.filter(q=>examSelection.has(q.id)) : qs.filter(q=>q.bank_status!=='rejected');
+  if(!items.length){ alert('Nessuna domanda da esportare.'); return; }
+  try{
+    await loadJSZip();
+    const files = buildDOCXFiles(items,{format,lang,title});
+    const zip = new JSZip();
+    Object.entries(files).forEach(([path,content])=>zip.file(path,content));
+    const blob = await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const base = (title||'quiz').replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').toLowerCase()||'quiz';
+    dl(base+'_print.docx', blob, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    closePDFModal();
+  }catch(e){ alert('Errore generazione DOCX: '+e.message); }
+}
+
+function buildDOCXFiles(items,{format,lang,title}){
+  const lb = PDF_LABELS[lang]||PDF_LABELS.it;
+  const locales = {it:'it-IT',en:'en-US',fr:'fr-FR',de:'de-DE',es:'es-ES'};
+  const dateStr = new Date().toLocaleDateString(locales[lang]||'it-IT');
+  const nword   = {it:'domande',en:'questions',fr:'questions',de:'Fragen',es:'preguntas'}[lang]||'domande';
+  const PG = {A4:{w:11906,h:16838},Letter:{w:12240,h:15840},Legal:{w:12240,h:20160},A3:{w:16838,h:23811},A5:{w:8391,h:11906}};
+  const pg = PG[format]||PG.A4;
+  const xe = s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // Paragraph: content = run string(s), opts = {jc, ind, after, keepNext}
+  const P=(content,opts={})=>{
+    const ppr=[
+      opts.jc     ? `<w:jc w:val="${opts.jc}"/>`         : '',
+      opts.ind    ? `<w:ind w:left="${opts.ind}"/>`        : '',
+      `<w:spacing w:after="${opts.after??120}"/>`,
+      opts.keepNext ? '<w:keepNext/>'                      : '',
+    ].filter(Boolean).join('');
+    return `<w:p><w:pPr>${ppr}</w:pPr>${Array.isArray(content)?content.join(''):content}</w:p>`;
+  };
+
+  // Run: text + optional {b, sz, fill, color}
+  const R=(text,o={})=>{
+    const rpr=[
+      o.b    ? '<w:b/>'                                                              : '',
+      o.sz   ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`                   : '',
+      o.fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.fill}"/>`           : '',
+      o.color? `<w:color w:val="${o.color}"/>`                                       : '',
+    ].filter(Boolean).join('');
+    return `<w:r>${rpr?`<w:rPr>${rpr}</w:rPr>`:''}<w:t xml:space="preserve">${xe(text)}</w:t></w:r>`;
+  };
+
+  const borders='<w:top w:val="single" w:sz="4" w:color="444444"/><w:left w:val="single" w:sz="4" w:color="444444"/><w:bottom w:val="single" w:sz="4" w:color="444444"/><w:right w:val="single" w:sz="4" w:color="444444"/>';
+
+  // Table cell: innerXML + width in twips
+  const TC=(inner,w)=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:tcBorders>${borders}</w:tcBorders></w:tcPr>${inner}</w:tc>`;
+
+  // Student header table
+  const headerTable=()=>{
+    const fields=[[lb.surname,2500],[lb.name,2500],[lb.id,2400],[lb.date,1200],[lb.score,1400]];
+    const cells=fields.map(([f,w])=>TC(
+      P(R(f,{b:true,sz:16}),{after:0})+P(R(''),{after:300}), w
+    )).join('');
+    return`<w:tbl><w:tblPr>
+      <w:tblW w:w="10000" w:type="dxa"/>
+      <w:tblCellMar><w:top w:w="80" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar>
+    </w:tblPr><w:tr>${cells}</w:tr></w:tbl>${P(R(''),{after:200})}`;
+  };
+
+  // Single question
+  const buildQ=(q,idx,showAns)=>{
+    const parts=[P(R(`${idx+1}.  ${q.prompt}`,{b:true}),{after:80,keepNext:true})];
+    if(q.type==='short_answer'){
+      parts.push(showAns
+        ? P(R(`→  ${q.answer||''}`,{b:true,fill:'C8E6C9'}),{ind:560,after:200})
+        : P(R(''),{ind:560,after:480}));
+    } else {
+      const multi=q.type==='mcq_multiple', cs=multi?new Set(q.corrects||[]):null;
+      (q.opts||[]).forEach((o,j)=>{
+        const cor=showAns&&(multi?cs.has(j):j===q.correct);
+        parts.push(P(R(`${L(j)}.  ${multi?'☐':'○'}  ${o}`, cor?{fill:'C8E6C9',b:true}:{}),{ind:560,after:60}));
+      });
+    }
+    parts.push(P(R(''),{after:120}));
+    return parts.join('');
+  };
+
+  // Full section (answer key or student copy)
+  const buildSection=(label,showAns)=>{
+    const parts=[];
+    if(title) parts.push(P(R(title,{b:true,sz:28}),{jc:'center',after:80}));
+    parts.push(P(R(label,{b:true,sz:32}),{jc:'center',after:80}));
+    parts.push(P(R(`${dateStr}  —  ${items.length} ${nword}`,{sz:18,color:'555555'}),{jc:'center',after:280}));
+    parts.push(headerTable());
+    items.forEach((q,i)=>parts.push(buildQ(q,i,showAns)));
+    return parts.join('');
+  };
+
+  const pgBreak=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+  const body=buildSection(lb.key,true)+pgBreak+buildSection(lb.copy,false);
+
+  return {
+    '[Content_Types].xml':
+`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+</Types>`,
+    '_rels/.rels':
+`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`,
+    'word/_rels/document.xml.rels':
+`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`,
+    'word/styles.xml':
+`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:docDefaults><w:rPrDefault><w:rPr>
+    <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+    <w:sz w:val="22"/><w:szCs w:val="22"/>
+  </w:rPr></w:rPrDefault></w:docDefaults>
+  <w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+    <w:name w:val="Normal"/>
+    <w:pPr><w:spacing w:after="120"/></w:pPr>
+  </w:style>
+</w:styles>`,
+    'word/document.xml':
+`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <w:body>
+    ${body}
+    <w:sectPr>
+      <w:pgSz w:w="${pg.w}" w:h="${pg.h}"/>
+      <w:pgMar w:top="1134" w:right="1247" w:bottom="1134" w:left="1247" w:header="709" w:footer="709" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`,
+  };
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+// Salvataggio automatico: dopo ogni modifica (debounce) e alla chiusura.
+let persistTimer=null;
+function schedulePersist(){clearTimeout(persistTimer);persistTimer=setTimeout(persistState,350);}
+['input','change','click'].forEach(ev=>document.addEventListener(ev,schedulePersist));
+window.addEventListener('pagehide',persistState);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistState();});
+loadState();
+render();
+if(!getApiKey())setTimeout(()=>toast('Per «Genera da paper» imposta la tua chiave API in ⚙ Impostazioni.',6000),600);
+</script>
+</body>
+</html>

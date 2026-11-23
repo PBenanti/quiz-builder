@@ -1,0 +1,19 @@
+{
+  "name": "Moodle Quiz Builder",
+  "short_name": "Quiz Builder",
+  "description": "Banca domande, prova finale ed esportazione per Moodle (AIKEN, GIFT, XML), con generazione di domande da paper tramite Claude.",
+  "lang": "it",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#f0f4f8",
+  "theme_color": "#3d5a99",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

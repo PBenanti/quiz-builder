@@ -25,6 +25,7 @@ button:hover{filter:brightness(.9)}
 .bj{background:#1565c0;color:#fff}    .bc{background:#1b5e20;color:#fff}
 .bak{background:#4a148c;color:#fff}   .bgft{background:#006064;color:#fff}
 .bxml{background:#e65100;color:#fff}
+.bsrcx{background:#283593;color:#fff}
 .be{background:#e8ecf4;color:#333}    .bd{background:#fce4ec;color:#c62828}
 .bs{background:var(--ok);color:#fff}  .bn{background:#eee;color:#333}
 .sm{padding:.2rem .48rem;font-size:.72rem}
@@ -53,6 +54,7 @@ button:hover{filter:brightness(.9)}
 .bgok{background:#e0f7fa;color:#006064} .bgno{background:#fce4ec;color:#c62828}
 .bxok{background:#fff8e1;color:#bf360c} .bxno{background:#ffebee;color:#b71c1c}
 .df1{background:#e8f5e9;color:#2e7d32}  .df2{background:#fff8e1;color:#f57c00}  .df3{background:#ffebee;color:#c62828}
+.bsrc{background:#eef1f8;color:#3d5a99;text-transform:none;letter-spacing:0;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis}
 .bsp-draft{background:#f5f5f5;color:#888}
 .bsp-reviewed{background:#e3f2fd;color:#1565c0}
 .bsp-approved{background:#e8f5e9;color:#2e7d32}
@@ -224,12 +226,38 @@ button:hover{filter:brightness(.9)}
 .pdf-field>label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .pdf-field input[type=text],.pdf-field select{font:.84rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px;background:#fff}
 .pdf-field input:focus,.pdf-field select:focus{outline:none;border-color:var(--pri)}
+.pdf-field>label.chk-row{text-transform:none;font-weight:400;font-size:.84rem;color:inherit;letter-spacing:0}
+/* ── FONTI ─────────────────────────────────────────────────── */
+.src-toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.35rem}
+.src-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:6px}
+.src-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:760px}
+.src-tbl th{background:#f0f4f8;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);padding:.38rem .45rem;border-bottom:1px solid var(--border)}
+.src-tbl td{padding:.4rem .45rem;border-bottom:1px solid var(--border);vertical-align:top}
+.src-tbl tr:last-child td{border-bottom:none}
+.src-tbl textarea,.src-tbl input[type=text]{width:100%;font:.8rem/1.35 'Segoe UI',sans-serif;padding:.26rem .38rem;border:1px solid var(--border);border-radius:4px;resize:vertical;background:#fff}
+.src-tbl textarea:focus,.src-tbl input:focus{outline:none;border-color:var(--pri)}
+.src-tbl textarea:disabled,.src-tbl input:disabled{background:#f5f5f5}
+.src-tbl td:nth-child(3){min-width:260px}.src-tbl td:nth-child(4){min-width:170px}
+.snum{font-weight:700;color:var(--pri);width:2rem}
+.sfile{width:170px;max-width:170px}
+.sfn{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px;font-size:.78rem}
+.sst{font-size:.7rem;color:var(--muted)}.sst.ok{color:var(--ok)}.sst.warn{color:var(--warn)}.sst.err{color:#c62828}
+.srow-err{background:#fff5f5}
+.skwprev{font:.68rem/1.3 Consolas,monospace;color:var(--muted);margin-top:.2rem;word-break:break-all}
+.sact{white-space:nowrap;width:1%}.sact button{margin-left:.15rem}
+.sact button:disabled{opacity:.35;cursor:default;filter:none}
+.gp-list{display:flex;flex-direction:column;gap:.25rem;max-height:52vh;overflow-y:auto}
+.gp-row{display:flex;gap:.5rem;align-items:baseline;font-size:.8rem;padding:.28rem .5rem;border-radius:4px;background:#f7f9fc}
+.gp-ic{width:1rem;text-align:center}.gp-ref{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gp-info{color:var(--muted);font-size:.74rem;white-space:nowrap}
+.gp-done .gp-ic{color:var(--ok)}.gp-error{background:#fff5f5}.gp-error .gp-ic,.gp-error .gp-info{color:#c62828}.gp-running{background:#eef3ff}
+.pill:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
 <header>
   <h1>🧩 Moodle Quiz Builder</h1>
-  <span class="ver">v1.6 · dati salvati in questo browser</span>
+  <span class="ver">v1.7 · dati salvati in questo browser</span>
   <button class="sm" id="settings-btn" onclick="openSettings()" style="margin-left:.8rem;background:rgba(255,255,255,.16);color:#fff">⚙ Impostazioni</button>
   <button class="sm" id="install-btn" onclick="installApp()" style="display:none;margin-left:.4rem;background:#fff;color:#3d5a99;font-weight:700">⬇ Installa app</button>
 </header>
@@ -269,6 +297,8 @@ button:hover{filter:brightness(.9)}
         <button class="bak"  onclick="doExportBank('aiken')">⬇ AIKEN</button>
         <button class="bgft" onclick="doExportBank('gift')">⬇ GIFT</button>
         <button class="bxml" onclick="doExportBank('xml')">⬇ XML</button>
+        <button class="bsrcx" onclick="openSrcExport()" title="Un file numerato per ogni fonte, con le parole chiave nel nome">⬇ Per fonte</button>
+        <button class="be" onclick="openSourcesManager()" title="Ordine, riferimenti e parole chiave delle fonti">📄 Fonti <span class="vbadge" id="badge-src">0</span></button>
       </div>
       <button class="bd" id="clear-all-btn" onclick="clearAllQs()" title="Elimina tutte le domande della banca">🗑 Svuota tutto</button>
     </div>
@@ -337,7 +367,7 @@ button:hover{filter:brightness(.9)}
 <div id="gen-modal" class="mo" style="display:none" onclick="if(event.target===this)closeGen()">
   <div class="mo-box">
     <div class="mo-hd">
-      <span>📚 Genera domande da fonte accademica</span>
+      <span>📚 Genera domande da una o più fonti</span>
       <button class="sm be" onclick="closeGen()">✕</button>
     </div>
     <div id="gen-content"></div>
@@ -375,11 +405,11 @@ button:hover{filter:brightness(.9)}
   </div>
 </div>
 <input type="file" id="json-import" accept=".json,application/json" style="display:none" onchange="importJSONFile(this.files[0])">
-<input type="file" id="src-file" accept=".pdf,.txt,.md" style="display:none" onchange="handleSrcFile(this.files[0])">
+<input type="file" id="src-file" accept=".pdf,.txt,.md" multiple style="display:none" onchange="addSourceFiles(this.files)">
 
 <script>
 // ── MODEL & STATE ─────────────────────────────────────────────────────
-const META_DEFAULTS=()=>({moodle_category_path:'',bank_status:'draft',exam_eligible:false,difficulty:2,source_language:'',output_language:''});
+const META_DEFAULTS=()=>({source_id:'',moodle_category_path:'',bank_status:'draft',exam_eligible:false,difficulty:2,source_language:'',output_language:''});
 let qs=[
   {id:'q1',type:'mcq_single',  prompt:'Quale tra i seguenti è un linguaggio di markup?',opts:['Python','HTML','Java','C++'],correct:1,...META_DEFAULTS()},
   {id:'q2',type:'mcq_single',  prompt:'Quanti bit compongono un byte?',opts:['4','8','16','32'],correct:1,...META_DEFAULTS()},
@@ -389,7 +419,13 @@ let qs=[
   {id:'q6',type:'short_answer',prompt:'Qual è il nome del protocollo per il trasferimento di pagine web?',answer:'HTTP',...META_DEFAULTS()},
 ];
 let editId=null,activeView='bank',activeTab='report',uid=7;
-let fType='',fCat='',fStatus='',fDiff='';
+let fType='',fCat='',fStatus='',fDiff='',fSrc='';
+// Registro delle fonti: {id, num, ref, keywords:[], filename, chars}. num = ordine nei file esportati.
+let sources=[],srcUid=1;
+function getSrc(id){return id?sources.find(s=>s.id===id):null;}
+function renumberSources(){sources.forEach((s,i)=>s.num=i+1);}
+function srcLabel(s){return s?`F${String(s.num).padStart(2,'0')}`:'';}
+function srcShort(s){return s?(s.keywords?.length?s.keywords.join(', '):(s.ref||s.filename||'').slice(0,40)):'';}
 let examSelection=new Set(),examWarnings=[];
 
 const TYPE_LABEL={mcq_single:'MCQ',mcq_multiple:'MCQ Multi',true_false:'Vero/Falso',short_answer:'Risposta breve'};
@@ -466,6 +502,7 @@ function updateNavBadges(){
   if(nb) nb.textContent=qs.filter(q=>q.bank_status!=='rejected').length;
   if(ne) ne.textContent=examSelection.size;
   if(ec) ec.textContent=qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible).length;
+  const bs=document.getElementById('badge-src');if(bs)bs.textContent=sources.length;
 }
 function setView(v){
   activeView=v;
@@ -490,6 +527,7 @@ function filteredQs(){
     if(fType&&q.type!==fType)return false;
     if(fStatus&&q.bank_status!==fStatus)return false;
     if(fCat&&q.moodle_category_path!==fCat)return false;
+    if(fSrc&&(fSrc==='__none'?getSrc(q.source_id):q.source_id!==fSrc))return false;
     if(fDiff&&String(q.difficulty||2)!==fDiff)return false;
     return true;
   });
@@ -497,7 +535,7 @@ function filteredQs(){
 function renderFilterBar(){
   const cats=[...new Set(qs.map(q=>q.moodle_category_path).filter(Boolean))];
   const total=filteredQs().length;
-  const hasFilter=fType||fStatus||fCat||fDiff;
+  const hasFilter=fType||fStatus||fCat||fDiff||fSrc;
   document.getElementById('filter-bar').innerHTML=`
     <select onchange="setFilter('type',this.value)">
       <option value="">Tutti i tipi</option>
@@ -515,11 +553,16 @@ function renderFilterBar(){
       <option value="">Tutte le difficoltà</option>
       ${[1,2,3].map(d=>`<option value="${d}"${fDiff===String(d)?' selected':''}>${DIFF_LABEL[d]}</option>`).join('')}
     </select>
+    ${sources.length?`<select onchange="setFilter('src',this.value)" style="max-width:220px">
+      <option value="">Tutte le fonti</option>
+      ${sources.map(x=>`<option value="${x.id}"${fSrc===x.id?' selected':''}>${srcLabel(x)} · ${esc(srcShort(x))}</option>`).join('')}
+      <option value="__none"${fSrc==='__none'?' selected':''}>Senza fonte</option>
+    </select>`:''}
     ${hasFilter?`<span class="filter-reset" onclick="resetFilters()">✕ Reimposta</span>`:''}
     <span class="filter-count">${total} / ${qs.length} domande</span>`;
 }
-function setFilter(k,v){if(k==='type')fType=v;else if(k==='status')fStatus=v;else if(k==='cat')fCat=v;else if(k==='diff')fDiff=v;renderBank();}
-function resetFilters(){fType='';fStatus='';fCat='';fDiff='';renderBank();}
+function setFilter(k,v){if(k==='type')fType=v;else if(k==='status')fStatus=v;else if(k==='cat')fCat=v;else if(k==='diff')fDiff=v;else if(k==='src')fSrc=v;renderBank();}
+function resetFilters(){fType='';fStatus='';fCat='';fDiff='';fSrc='';renderBank();}
 
 // ── CARD RENDER ───────────────────────────────────────────────────────
 function notesHtml(ak,gt,mx){
@@ -537,7 +580,9 @@ function rCard(q,i){
   else{const multi=q.type==='mcq_multiple',cs=multi?new Set(q.corrects||[]):null;body=`<ul class="opts">${(q.opts||[]).map((o,j)=>{const cor=multi?cs.has(j):j===q.correct;return`<li class="opt${cor?' cor':''}"><span class="lt">${L(j)}.</span>${esc(o)}</li>`;}).join('')}</ul>`;}
   const bs=q.bank_status||'draft';
   const catStr=q.moodle_category_path?`<span class="cat">📁 ${esc(q.moodle_category_path)}</span>`:'';
-  const metaLine=(q.moodle_category_path||bs!=='draft'||q.exam_eligible)?`<div class="q-meta">${catStr}<span class="badge ${BS_CSS[bs]}">${BS_LABEL[bs]}</span>${q.exam_eligible?'<span style="font-size:.7rem;color:var(--ok)">⭐ Esame</span>':''}</div>`:'';
+  const sq=getSrc(q.source_id);
+  const srcStr=sq?`<span class="badge bsrc" title="${esc(sq.ref||sq.filename||'')}">📄 ${srcLabel(sq)} · ${esc(srcShort(sq))}</span>`:'';
+  const metaLine=(sq||q.moodle_category_path||bs!=='draft'||q.exam_eligible)?`<div class="q-meta">${srcStr}${catStr}<span class="badge ${BS_CSS[bs]}">${BS_LABEL[bs]}</span>${q.exam_eligible?'<span style="font-size:.7rem;color:var(--ok)">⭐ Esame</span>':''}</div>`:'';
   return`<div class="qc${bs==='rejected'?' rejected':''}" id="qc-${q.id}">
     <div class="qh">
       <span class="qn">${i+1}.</span>
@@ -592,7 +637,12 @@ function rEdit(q,i,ak,gt,mx){
         <div class="meta-title">Metadati Moodle</div>
         <div class="meta-row">
           <div class="meta-col" style="flex:2;min-width:180px">
-            <label>Categoria Moodle</label>
+            <label>Fonte</label>
+            <select onchange="setQSource('${q.id}',this.value)" style="font:.82rem/1.4 'Segoe UI',sans-serif;padding:.26rem .42rem;border:1px solid var(--border);border-radius:4px;background:#fff;max-width:320px">
+              <option value="">— nessuna —</option>
+              ${sources.map(x=>`<option value="${x.id}"${q.source_id===x.id?' selected':''}>${srcLabel(x)} · ${esc(srcShort(x))}</option>`).join('')}
+            </select>
+            <label style="margin-top:.4rem">Categoria Moodle</label>
             <input type="text" value="${esc(q.moodle_category_path||'')}" placeholder="es. $course$/Top/Cap1" oninput="setCatPath('${q.id}',this.value)">
           </div>
           <div class="meta-col">
@@ -723,13 +773,14 @@ function rReport(){
     <div class="sr"><span class="sv">${cnt('mcq_single')}</span> MCQ singola · <span class="sv">${cnt('mcq_multiple')}</span> MCQ multipla · <span class="sv">${cnt('true_false')}</span> V/F · <span class="sv">${cnt('short_answer')}</span> Breve</div>
     <div class="sr"><span class="sv">${cntS('draft')}</span> Bozza · <span class="sv">${cntS('reviewed')}</span> Revisionata · <span class="sv">${cntS('approved')}</span> Approvata · <span class="sv w">${cntS('rejected')}</span> Rifiutata</div>
     <div class="sr"><span class="sv">${qs.filter(q=>q.exam_eligible).length}</span> ammissibili esame · <span class="sv">${qs.filter(q=>q.bank_status==='approved'&&q.exam_eligible).length}</span> pronte per prova</div>
+    ${sources.length?`<div class="sr"><span class="sv">${sources.length}</span> fonti · ${sources.map(x=>`${srcLabel(x)}: <b>${qs.filter(q=>q.source_id===x.id&&q.bank_status!=='rejected').length}</b>`).join(' · ')}${qs.some(q=>!getSrc(q.source_id))?` · senza fonte: <b>${qs.filter(q=>!getSrc(q.source_id)).length}</b>`:''}</div>`:''}
     <div class="sr"><span class="sv">${akOk.length}</span> compatibili AIKEN · <span class="sv">${gtOk.length}</span> GIFT · <span class="sv">${mxOk.length}</span> XML</div>
     <div class="xsect">Esclusioni AIKEN</div>${akEx.length?akEx.map(q=>`<div class="xi xa"><b>${esc(q.id)}</b><span>${esc(aikenCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}
     <div class="xsect">Esclusioni GIFT</div>${gtEx.length?gtEx.map(q=>`<div class="xi xg"><b>${esc(q.id)}</b><span>${esc(giftCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}
     <div class="xsect">Esclusioni Moodle XML</div>${mxEx.length?mxEx.map(q=>`<div class="xi xm"><b>${esc(q.id)}</b><span>${esc(mxmlCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}`;
 }
-function rAiken(){const lines=[];qs.filter(q=>aikenCheck(q).ok&&q.bank_status!=='rejected').forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});return`<div class="pre">${esc(lines.join('\n')||'(nessuna)')}</div>`;}
-function rGIFT(){const comp=qs.filter(q=>giftCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const l=['// GIFT — Moodle Quiz Builder v1.6',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});return`<div class="pre">${esc(l.join('\n'))}</div>`;}
+function rAiken(){const comp=qs.filter(q=>aikenCheck(q).ok&&q.bank_status!=='rejected');return`<div class="pre">${esc(comp.length?buildAIKENContent(comp):'(nessuna)')}</div>`;}
+function rGIFT(){const comp=qs.filter(q=>giftCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const l=['// GIFT — Moodle Quiz Builder v1.7',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});return`<div class="pre">${esc(l.join('\n'))}</div>`;}
 function rXML(){const comp=qs.filter(q=>mxmlCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const xml=buildMoodleXML(comp);return`<div class="pre">${esc(xml.length>3500?xml.slice(0,3500)+'\n…':xml)}</div>`;}
 function rJSON(){const data=qs.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok}));return`<div class="pre">${esc(JSON.stringify(data,null,2))}</div>`;}
 
@@ -755,8 +806,8 @@ function clearAllQs(){
   }
   clearTimeout(clearArmed);clearArmed=null;
   const n=qs.length;
-  qs=[];examSelection=new Set();examWarnings=[];editId=null;
-  fType='';fCat='';fStatus='';fDiff='';
+  qs=[];examSelection=new Set();examWarnings=[];editId=null;sources=[];srcUid=1;
+  fType='';fCat='';fStatus='';fDiff='';fSrc='';
   if(btn){btn.textContent='🗑 Svuota tutto';btn.style.background='';btn.style.color='';}
   render();
   toast(`Banca svuotata: ${n} domande eliminate.`);
@@ -781,6 +832,7 @@ function setBankStatus(id,s){
   const q=get(id);if(!q)return;q.bank_status=s;
   Object.keys(BS_LABEL).forEach(x=>{const b=document.querySelector(`[data-bs="${id}-${x}"]`);if(b)b.classList.toggle('on',x===s);});
 }
+function setQSource(id,v){const q=get(id);if(q)q.source_id=v;}
 function setExamEligible(id,v){const q=get(id);if(q)q.exam_eligible=v;}
 function setStatus(id,s){const q=get(id);if(q){q.bank_status=s;renderBank();}}
 function liveUpdate(id){
@@ -802,26 +854,17 @@ function doExportExam(fmt){
 }
 function doExportItems(fmt,items,suffix){
   if(fmt==='json'){
-    const data=items.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok}));
-    dl(`quiz_${suffix}.json`,JSON.stringify(data,null,2),'application/json');
+    dl(`quiz_${suffix}.json`,JSON.stringify(exportJSONItems(items),null,2),'application/json');
   } else if(fmt==='csv'){
-    const mx=Math.max(0,...items.map(q=>(q.opts||[]).length));
-    const hdr=['id','type','prompt',...Array.from({length:mx},(_,i)=>`opt_${i+1}`),'correct_letter','answer','category','status','difficulty','exam_eligible','aiken_ok','gift_ok','mxml_ok'];
-    const rows=items.map(q=>{
-      const pad=[...(q.opts||[])];while(pad.length<mx)pad.push('');
-      let cl='';if(q.type==='mcq_multiple')cl=(q.corrects||[]).map(i=>L(i)).join(';');else if(q.correct!=null)cl=L(q.correct);
-      return[q.id,q.type,q.prompt,...pad,cl,q.answer||'',q.moodle_category_path||'',q.bank_status||'draft',q.difficulty||2,q.exam_eligible?'true':'false',aikenCheck(q).ok?'YES':'NO',giftCheck(q).ok?'YES':'NO',mxmlCheck(q).ok?'YES':'NO'].map(ce).join(',');
-    });
-    dl(`quiz_${suffix}.csv`,[hdr.join(','),...rows].join('\n'),'text/csv');
+    dl(`quiz_${suffix}.csv`,buildCSVContent(items),'text/csv');
   } else if(fmt==='aiken'){
     const comp=items.filter(q=>aikenCheck(q).ok);
     if(!comp.length){alert('Nessuna domanda compatibile con AIKEN.');return;}
-    const lines=[];comp.forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});
-    dl(`quiz_${suffix}_aiken.txt`,lines.join('\n'),'text/plain');
+    dl(`quiz_${suffix}_aiken.txt`,buildAIKENContent(comp),'text/plain');
   } else if(fmt==='gift'){
     const comp=items.filter(q=>giftCheck(q).ok);
     if(!comp.length){alert('Nessuna domanda compatibile con GIFT.');return;}
-    const l=['// Moodle GIFT — Moodle Quiz Builder v1.6',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});
+    const l=['// Moodle GIFT — Moodle Quiz Builder v1.7',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});
     dl(`quiz_${suffix}.gift`,l.join('\n'),'text/plain');
   } else {
     const comp=items.filter(q=>mxmlCheck(q).ok);
@@ -945,7 +988,7 @@ function forgetKey(){lsSet('mqb.apiKey',null);const i=document.getElementById('s
 let persistOk=true;
 function persistState(){
   if(!persistOk)return;
-  persistOk=lsSet('mqb.state',JSON.stringify({v:1,qs,uid,examSelection:[...examSelection],zipNaming}));
+  persistOk=lsSet('mqb.state',JSON.stringify({v:2,qs,uid,examSelection:[...examSelection],zipNaming,sources,srcUid}));
   if(!persistOk)toast('Attenzione: il salvataggio automatico non è disponibile (spazio o permessi del browser).',7000);
 }
 function loadState(){
@@ -955,6 +998,7 @@ function loadState(){
     qs=st.qs;uid=Math.max(st.uid||1,...qs.map(q=>parseInt(String(q.id).replace(/\D/g,''))+1||1));
     examSelection=new Set((st.examSelection||[]).filter(id=>qs.some(q=>q.id===id)));
     if(st.zipNaming)zipNaming={...zipNaming,...st.zipNaming};
+    if(Array.isArray(st.sources)){sources=st.sources.map(x=>({keywords:[],...x}));srcUid=Math.max(st.srcUid||1,...sources.map(x=>parseInt(String(x.id).replace(/\D/g,''))+1||1));renumberSources();}
   }catch(e){}
 }
 function importJSONFile(file){
@@ -966,7 +1010,19 @@ function importJSONFile(file){
       if(!Array.isArray(arr))throw new Error('il file non contiene un elenco di domande');
       const ok=arr.filter(q=>q&&TYPES.includes(q.type)&&String(q.prompt||'').trim());
       if(!ok.length)throw new Error('nessuna domanda riconosciuta');
-      ok.forEach(q=>{delete q.aikenCompatible;delete q.giftCompatible;delete q.mxmlCompatible;const m=META_DEFAULTS();for(const k in m)if(q[k]===undefined)q[k]=m[k];q.id='q'+(uid++);qs.push(q);});
+      const before=new Set(sources.map(x=>x.id)),numOf={};
+      ok.forEach(q=>{
+        const ref=String(q.source_ref||'').trim(),kw=Array.isArray(q.source_keywords)?q.source_keywords.map(String):[];
+        if(ref&&q.source_num!=null){const k=ref.toLowerCase().replace(/\s+/g,' ');if(numOf[k]==null)numOf[k]=Number(q.source_num);}
+        ['aikenCompatible','giftCompatible','mxmlCompatible','source_ref','source_keywords','source_num'].forEach(k=>delete q[k]);
+        const m=META_DEFAULTS();for(const k in m)if(q[k]===undefined)q[k]=m[k];
+        q.source_id=ref?ensureSource({ref,keywords:kw}).id:(getSrc(q.source_id)?q.source_id:'');
+        q.id='q'+(uid++);qs.push(q);
+      });
+      // Le fonti nuove riprendono l'ordine (numero) che avevano nel file esportato
+      const old=sources.filter(x=>before.has(x.id)),fresh=sources.filter(x=>!before.has(x.id));
+      const nk=x=>numOf[x.ref.toLowerCase().replace(/\s+/g,' ')]??1e9;
+      fresh.sort((a,b)=>nk(a)-nk(b));sources=[...old,...fresh];renumberSources();
       document.getElementById('settings-modal')?.remove();
       render();toast(`Importate ${ok.length} domande${arr.length>ok.length?` (${arr.length-ok.length} scartate)`:''}.`);
     }catch(err){toast('Importazione non riuscita: '+err.message,6000);}
@@ -1018,108 +1074,280 @@ function get(id){return qs.find(q=>q.id===id);}
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function L(i){return String.fromCharCode(65+i);}
 
-// ── GENERA DA FONTE ───────────────────────────────────────────────────
-let srcText='',srcName='',pendingQs=[],pendingSelected=new Set(),cfgN=10,cfgLang='auto';
-let srcTitle=''; // titolo/riferimento della fonte, incluso come citazione in ogni domanda generata
-let reviewPage=0; // indice corrente nello slider di review delle domande generate
+// ── GENERA DA FONTI (uno o più PDF) ───────────────────────────────────
+// Flusso: carica file → anteprima fonti (riferimento + parole chiave rilevati, modificabili,
+// domande per fonte) → tipi/lingua → generazione fonte per fonte → revisione → importazione.
+let pendingQs=[],pendingSelected=new Set(),cfgN=10,cfgLang='auto',reviewPage=0;
+let genSources=[],genRunning=false,genCancel=false,genCfg=null,genKeySeq=1;
 const LANGS=[{id:'auto',label:'Auto'},{id:'it',label:'🇮🇹 Italiano'},{id:'en',label:'🇬🇧 English'},{id:'fr',label:'🇫🇷 Français'},{id:'de',label:'🇩🇪 Deutsch'},{id:'es',label:'🇪🇸 Español'}];
 const LANG_INSTR={auto:'Usa la stessa lingua del documento sorgente.',it:'Genera tutte le domande in italiano.',en:'Generate all questions in English.',fr:'Génère toutes les questions en français.',de:'Generiere alle Fragen auf Deutsch.',es:'Genera todas las preguntas en español.'};
 const TF_DEFAULTS={auto:['Vero','Falso'],it:['Vero','Falso'],en:['True','False'],fr:['Vrai','Faux'],de:['Wahr','Falsch'],es:['Verdadero','Falso']};
 const SOURCE_WORD={it:'Fonte',en:'Source',fr:'Source',de:'Quelle',es:'Fuente'};
-function openGen(){document.getElementById('gen-modal').style.display='flex';showGenStep('upload');}
-function closeGen(){document.getElementById('gen-modal').style.display='none';srcText='';srcName='';pendingQs=[];pendingSelected=new Set();document.getElementById('src-file').value='';}
+const MAX_GEN_SOURCES=30;
+
+function openGen(){genSources=[];pendingQs=[];pendingSelected=new Set();document.getElementById('gen-modal').style.display='flex';showGenStep('upload');}
+function closeGen(){
+  if(genRunning){genCancel=true;}
+  document.getElementById('gen-modal').style.display='none';
+  genSources=[];pendingQs=[];pendingSelected=new Set();
+  document.getElementById('src-file').value='';
+}
 function setGenHtml(b,f=''){document.getElementById('gen-content').innerHTML=`<div class="mo-body">${b}</div>${f?`<div class="mo-foot">${f}</div>`:''}`;}
+function genBox(wide){const b=document.querySelector('#gen-modal .mo-box');if(b)b.style.width=wide?'min(1080px,97vw)':'';}
+
 function showGenStep(step){
+  genBox(step==='sources'||step==='generating');
   if(step==='upload'){
-    setGenHtml(`<div class="dz" id="dz" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');handleSrcFile(event.dataTransfer.files[0])"><div class="dz-icon">📄</div><p><strong>Trascina PDF o file di testo</strong></p><button class="bp" style="margin:.5rem 0" onclick="document.getElementById('src-file').click()">Scegli file</button><p class="dz-sub">PDF · TXT · MD</p></div><div class="div-or">oppure</div><label class="paste-lbl">Incolla il testo</label><textarea class="paste-ta" id="paste-src" placeholder="Incolla qui il testo del paper…" rows="5"></textarea>`,`<button class="bn" onclick="closeGen()">Annulla</button><button class="bs" onclick="goToConfig()">Continua →</button>`);
+    setGenHtml(`<div class="dz" id="dz" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');addSourceFiles(event.dataTransfer.files)"><div class="dz-icon">📚</div><p><strong>Trascina uno o più PDF (o file di testo)</strong></p><button class="bp" style="margin:.5rem 0" onclick="document.getElementById('src-file').click()">Scegli file</button><p class="dz-sub">PDF · TXT · MD — puoi selezionarne molti insieme (fino a ${MAX_GEN_SOURCES})</p></div><div class="div-or">oppure</div><label class="paste-lbl">Incolla il testo di una fonte</label><textarea class="paste-ta" id="paste-src" placeholder="Incolla qui il testo del paper…" rows="5"></textarea>`,
+      `<button class="bn" onclick="closeGen()">Annulla</button>${genSources.length?`<button class="bn" onclick="showGenStep('sources')">Torna alle fonti (${genSources.length})</button>`:''}<button class="bs" onclick="addPastedSource()">Continua →</button>`);
+  } else if(step==='sources'){
+    renderSourcesStep();
   } else if(step==='config'){
-    setGenHtml(`<div class="src-chip">📄 <b>${esc(srcName)}</b><span class="sc">${srcText.length.toLocaleString()} car.</span></div>
-      <div class="cfg-row">
-        <span class="cfg-lbl">Titolo / riferimento fonte <span class="hint">(citato in ogni domanda generata)</span></span>
-        <div style="display:flex;gap:.35rem;align-items:center;margin-top:.15rem">
-          <input type="text" id="cfg-srctitle" value="${esc(detectedRef.text&&detectedRef.key===srcKey()?detectedRef.text:srcName)}" placeholder="es. Benanti P. (2024). Intelligenza artificiale e società. Laterza." oninput="srcTitleTouched=true" style="flex:1;font:.87rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px">
-          <button class="sm be" id="ref-detect-btn" onclick="detectSourceRef(true)" title="Rileva il riferimento leggendo la fonte">🔍 Rileva</button>
-        </div>
-        <div class="hint" id="ref-detect-status" style="margin-top:.2rem"></div>
-      </div>
-      <div class="cfg-row"><span class="cfg-lbl">Numero domande</span><div class="pill-row">${[5,8,10,15,20].map(n=>`<button class="pill${n===cfgN?' on':''}" data-n="${n}" onclick="setCfgN(${n})">${n}</button>`).join('')}</div></div>
-      <div class="cfg-row"><span class="cfg-lbl">Tipi</span><div class="cfg-types"><label><input type="checkbox" id="ct-mcqs" checked> MCQ singola</label><label><input type="checkbox" id="ct-mcqm"> MCQ multipla</label><label><input type="checkbox" id="ct-tf"> Vero/Falso</label><label><input type="checkbox" id="ct-sa"> Risposta breve</label></div></div>
+    const tot=genSources.reduce((a,g)=>a+(g.n||0),0);
+    setGenHtml(`<div class="src-chip">📚 <b>${genSources.length} ${genSources.length===1?'fonte':'fonti'}</b><span class="sc">${tot} domande richieste in tutto</span></div>
+      <div class="cfg-row"><span class="cfg-lbl">Tipi</span><div class="cfg-types"><label><input type="checkbox" id="ct-mcqs" checked> MCQ singola</label><label><input type="checkbox" id="ct-mcqm"> MCQ multipla</label><label><input type="checkbox" id="ct-tf"> Vero/Falso</label><label><input type="checkbox" id="ct-sa"> Risposta breve</label></div>
+        <div class="hint" style="margin-top:.3rem">Il formato AIKEN accetta solo MCQ a risposta singola: per i file AIKEN per fonte lascia selezionato solo questo tipo.</div></div>
       <div class="cfg-row"><span class="cfg-lbl">Lingua</span><div class="pill-row">${LANGS.map(l=>`<button class="pill${l.id===cfgLang?' on':''}" data-l="${l.id}" onclick="setCfgLang('${l.id}')">${l.label}</button>`).join('')}</div></div>
-      <div class="cfg-row"><span class="cfg-lbl">Focus <span class="hint">(opzionale)</span></span><input type="text" id="cfg-focus" placeholder="es. governance algoritmica · cap. 3…" style="width:100%;font:.85rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px"></div>`,
-      `<button class="bn" onclick="showGenStep('upload')">← Indietro</button><button class="bs" onclick="startGeneration()">Genera →</button>`);
-    if(detectedRef.key!==srcKey())srcTitleTouched=false;
-    detectSourceRef(false);
+      <div class="cfg-row"><span class="cfg-lbl">Focus <span class="hint">(opzionale, vale per tutte le fonti)</span></span><input type="text" id="cfg-focus" placeholder="es. concetti chiave per l'esame finale" style="width:100%;font:.85rem/1.4 'Segoe UI',sans-serif;padding:.3rem .45rem;border:1px solid var(--border);border-radius:4px"></div>`,
+      `<button class="bn" onclick="showGenStep('sources')">← Fonti</button><button class="bs" onclick="startGeneration()">Genera ${tot} domande →</button>`);
   } else if(step==='generating'){
-    setGenHtml(`<div class="spin-wrap"><div class="spin"></div><div class="spin-msg" id="spin-msg">Generazione in corso…</div><p class="spin-sub">Il modello legge la fonte e costruisce le domande</p></div>`);
+    renderGenProgress();
   }
 }
-function goToConfig(){const p=document.getElementById('paste-src');if(p?.value.trim().length>=50){srcText=p.value.trim();srcName='testo incollato';}if(!srcText||srcText.length<50){alert('Carica un file o incolla almeno 50 caratteri.');return;}showGenStep('config');}
 
-// ── RILEVAMENTO AUTOMATICO DEL RIFERIMENTO BIBLIOGRAFICO ─────────────
-// Legge l'inizio della fonte (frontespizio, intestazione, abstract) e chiede a Claude
-// un riferimento in stile autore-data. Non sovrascrive mai un campo modificato a mano.
-let srcTitleTouched=false,detectedRef={key:'',text:''},refDetecting=false;
-function srcKey(){return srcName+'|'+srcText.length+'|'+srcText.slice(0,200);}
-function setRefStatus(msg,color){const s=document.getElementById('ref-detect-status');if(s){s.textContent=msg;s.style.color=color||'';}}
-async function detectSourceRef(manual=false){
-  if(!srcText||refDetecting)return;
-  const key=srcKey();
-  if(!manual&&detectedRef.key===key){if(detectedRef.text)setRefStatus('✓ Riferimento rilevato dalla fonte — verificalo prima di generare.','var(--ok)');return;}
-  const inp=document.getElementById('cfg-srctitle'),btn=document.getElementById('ref-detect-btn');
-  if(!getApiKey()){setRefStatus('Per il rilevamento automatico imposta la chiave API in ⚙ Impostazioni.','var(--warn)');return;}
-  refDetecting=true;if(btn){btn.disabled=true;btn.textContent='⏳';}
-  setRefStatus('Lettura della fonte per individuare il riferimento…');
-  const head=srcText.slice(0,6000),tail=srcText.length>9000?srcText.slice(-1500):'';
-  const prompt=`Sei un bibliotecario accademico. Dal testo seguente (inizio${tail?' e fine':''} di un documento) ricava il riferimento bibliografico della fonte stessa, non delle opere che cita.
-Formato: Cognome I. (Anno). Titolo. Rivista/Editore, eventuali volume(numero), pagine. Per più autori: Cognome I., Cognome I. Oltre tre autori: primo autore et al.
-Usa SOLO informazioni presenti nel testo; ometti gli elementi che non trovi, senza inventarli né usare segnaposto.
-Se non riesci a individuare almeno il titolo con ragionevole certezza, rispondi esattamente: NESSUNO
-Rispondi con il solo riferimento, su una riga, senza virgolette né commenti.
+// ---- caricamento fonti
+function newGenSource(filename){
+  return{key:'g'+(genKeySeq++),filename,text:'',chars:0,status:'reading',err:'',ref:'',keywords:[],n:cfgN,detect:'idle',touchedRef:false,touchedKw:false,genStatus:'',genCount:0,genErr:''};
+}
+async function addSourceFiles(fileList){
+  const files=[...(fileList||[])].filter(f=>/\.(pdf|txt|md)$/i.test(f.name)||f.type==='application/pdf'||f.type.startsWith('text/'));
+  document.getElementById('src-file').value='';
+  if(!files.length){toast('Nessun file PDF, TXT o MD riconosciuto.');return;}
+  const room=MAX_GEN_SOURCES-genSources.length;
+  if(files.length>room)toast(`Puoi caricare al massimo ${MAX_GEN_SOURCES} fonti per volta: ne aggiungo ${Math.max(room,0)}.`,6000);
+  const added=files.slice(0,Math.max(room,0)).map(f=>{const g=newGenSource(f.name);g._file=f;return g;});
+  genSources.push(...added);
+  showGenStep('sources');
+  for(const g of added){
+    try{
+      const isPDF=g._file.type==='application/pdf'||/\.pdf$/i.test(g._file.name);
+      if(isPDF){await loadPDFJS();g.text=await extractPDFText(g._file);}
+      else g.text=(await g._file.text()).trim();
+      if(!g.text||g.text.length<50)throw new Error(isPDF?'nessun testo estraibile (forse è una scansione)':'testo troppo breve');
+      g.chars=g.text.length;g.status='ready';
+    }catch(e){g.status='error';g.err=e?.message||'errore di lettura';}
+    delete g._file;
+    updateSrcRow(g);updateSrcSummary();
+  }
+  runDetectQueue();
+}
+function addPastedSource(){
+  const p=document.getElementById('paste-src'),t=p?.value.trim()||'';
+  if(t.length>=50){
+    if(genSources.length>=MAX_GEN_SOURCES){toast(`Massimo ${MAX_GEN_SOURCES} fonti.`);return;}
+    const g=newGenSource(`testo incollato ${genSources.filter(x=>x.filename.startsWith('testo incollato')).length+1}`);
+    g.text=t;g.chars=t.length;g.status='ready';genSources.push(g);
+    showGenStep('sources');runDetectQueue();return;
+  }
+  if(t.length){toast('Incolla almeno 50 caratteri.');return;}
+  if(genSources.length){showGenStep('sources');return;}
+  toast('Carica uno o più file o incolla il testo di una fonte.');
+}
+
+// ---- rilevamento riferimento + parole chiave (2 fonti alla volta)
+let detectActive=0;
+function runDetectQueue(){
+  if(!getApiKey()){genSources.forEach(g=>{if(g.status==='ready'&&g.detect==='idle'){g.detect='nokey';if(!g.ref)g.ref=g.filename.replace(/\.[^.]+$/,'');updateSrcRow(g);}});return;}
+  while(detectActive<2){
+    const g=genSources.find(x=>x.status==='ready'&&x.detect==='idle');
+    if(!g)break;
+    detectActive++;g.detect='running';updateSrcRow(g);
+    detectSourceMeta(g).finally(()=>{detectActive--;runDetectQueue();});
+  }
+}
+function redetect(key){const g=genSources.find(x=>x.key===key);if(!g||g.status!=='ready'||g.detect==='running')return;g.touchedRef=false;g.touchedKw=false;g.detect='idle';runDetectQueue();}
+async function detectSourceMeta(g){
+  const head=g.text.slice(0,6000),tail=g.text.length>9000?g.text.slice(-1500):'';
+  const prompt=`Sei un bibliotecario accademico. Dal testo seguente (inizio${tail?' e fine':''} di un documento) ricava:
+1. "reference": il riferimento bibliografico della fonte stessa (non delle opere che cita), nel formato: Cognome I. (Anno). Titolo. Rivista/Editore, eventuali volume(numero), pagine. Più autori: Cognome I., Cognome I.; oltre tre autori: primo autore et al. Usa SOLO informazioni presenti nel testo e ometti quelle che non trovi, senza inventarle né usare segnaposto. Se non individui almeno il titolo con ragionevole certezza, usa null.
+2. "keywords": da 2 a 4 parole chiave brevi (una o due parole ciascuna), nella lingua del documento, in minuscolo, che identifichino il tema specifico della fonte e la distinguano da altri testi dello stesso corso. Serviranno nel nome di un file.
+Rispondi SOLO con un oggetto JSON: {"reference": "...", "keywords": ["...", "..."]}
 
 --- INIZIO DOCUMENTO ---
 ${head}${tail?`\n[…]\n--- FINE DOCUMENTO ---\n${tail}`:''}`;
   try{
-    const res={text:await callClaude(prompt,{model:getSettings().refModel,maxTokens:400})};
-    let ref=String(res?.text||'').trim().split('\n').map(s=>s.trim()).filter(Boolean)[0]||'';
-    ref=ref.replace(/^["«“']+|["»”']+$/g,'').replace(/^(riferimento|reference)\s*:\s*/i,'').trim();
-    if(!ref||/^NESSUNO\b/i.test(ref)||ref.length>400){
-      detectedRef={key,text:''};
-      setRefStatus('Non sono riuscito a individuare un riferimento affidabile: inseriscilo a mano.','var(--warn)');
-    }else{
-      detectedRef={key,text:ref};
-      const cur=document.getElementById('cfg-srctitle');
-      if(cur&&(!srcTitleTouched||manual)){cur.value=ref;if(manual)srcTitleTouched=false;}
-      setRefStatus(srcTitleTouched&&!manual?`Rilevato: ${ref} — il tuo testo non è stato sostituito (usa 🔍 Rileva per applicarlo).`:'✓ Riferimento rilevato dalla fonte — verificalo prima di generare.','var(--ok)');
-    }
-  }catch(e){
-    setRefStatus('Rilevamento non riuscito ('+(e?.message||'errore')+'): inserisci il riferimento a mano o riprova.','var(--warn)');
-  }finally{
-    refDetecting=false;
-    const b=document.getElementById('ref-detect-btn');if(b){b.disabled=false;b.textContent='🔍 Rileva';}
-  }
+    const raw=await callClaude(prompt,{model:getSettings().refModel,maxTokens:500});
+    const o=extractJSONObject(raw)||{};
+    let ref=String(o.reference||'').trim().replace(/^["«“']+|["»”']+$/g,'');
+    if(/^(null|nessuno)$/i.test(ref)||ref.length>400)ref='';
+    const kw=(Array.isArray(o.keywords)?o.keywords:[]).map(k=>String(k).trim().toLowerCase()).filter(Boolean).slice(0,4);
+    if(!g.touchedRef)g.ref=ref||g.ref||'';
+    if(!g.touchedKw&&kw.length)g.keywords=kw;
+    g.detect=ref?'done':'partial';
+  }catch(e){g.detect='fail';g.err=e?.message||'errore';}
+  if(!g.ref&&!g.touchedRef)g.ref=g.filename.replace(/\.[^.]+$/,'');
+  updateSrcRow(g,true);
 }
-function setCfgN(n){cfgN=n;document.querySelectorAll('[data-n]').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.n)===n));}
+
+// ---- tabella delle fonti
+function srcStatusHtml(g){
+  if(g.status==='reading')return'<span class="sst">⏳ lettura…</span>';
+  if(g.status==='error')return`<span class="sst err">✗ ${esc(g.err)}</span>`;
+  const c=`${g.chars.toLocaleString('it-IT')} car.`;
+  if(g.detect==='running')return`<span class="sst">${c} · 🔍 rilevamento…</span>`;
+  if(g.detect==='done')return`<span class="sst ok">${c} · ✓ rilevato</span>`;
+  if(g.detect==='partial')return`<span class="sst warn">${c} · riferimento non trovato</span>`;
+  if(g.detect==='fail')return`<span class="sst warn">${c} · rilevamento non riuscito</span>`;
+  if(g.detect==='nokey')return`<span class="sst warn">${c} · chiave API assente</span>`;
+  return`<span class="sst">${c}</span>`;
+}
+function srcRowHtml(g,i){
+  const dis=g.status!=='ready'?'disabled':'';
+  return`<tr id="sr-${g.key}" class="${g.status==='error'?'srow-err':''}">
+    <td class="snum">${String(i+1).padStart(2,'0')}</td>
+    <td class="sfile"><div class="sfn" title="${esc(g.filename)}">${esc(g.filename)}</div><div id="ss-${g.key}">${srcStatusHtml(g)}</div></td>
+    <td><textarea id="sref-${g.key}" rows="2" ${dis} placeholder="Riferimento bibliografico" oninput="setGenRef('${g.key}',this.value)">${esc(g.ref)}</textarea></td>
+    <td><input type="text" id="skw-${g.key}" ${dis} value="${esc(g.keywords.join(', '))}" placeholder="parola, parola" oninput="setGenKw('${g.key}',this.value)"><div class="skwprev" id="skp-${g.key}">${esc(kwSlug(g.keywords)||'')}</div></td>
+    <td><input type="number" min="1" max="60" class="bpn" ${dis} value="${g.n}" oninput="setGenN('${g.key}',this.value)"></td>
+    <td class="sact"><button class="sm be" title="Rileva di nuovo" ${dis} onclick="redetect('${g.key}')">↻</button><button class="sm be" title="Sposta su" onclick="moveGenSrc('${g.key}',-1)" ${i===0?'disabled':''}>▲</button><button class="sm bd" title="Rimuovi" onclick="removeGenSrc('${g.key}')">✕</button></td>
+  </tr>`;
+}
+function renderSourcesStep(){
+  if(!genSources.length){showGenStep('upload');return;}
+  setGenHtml(`
+    <div class="src-toolbar">
+      <span class="cfg-lbl" style="margin:0">Domande per fonte</span>
+      <div class="pill-row">${[5,8,10,15,20].map(n=>`<button class="pill${n===cfgN?' on':''}" data-n="${n}" onclick="setAllN(${n})">${n}</button>`).join('')}</div>
+      <span class="sep"></span>
+      <button class="sm bp" onclick="document.getElementById('src-file').click()">＋ Aggiungi file</button>
+    </div>
+    <div class="hint" style="margin:.1rem 0 .55rem">Riferimento e parole chiave sono rilevati leggendo ogni fonte: verificali. Il riferimento viene citato in ogni domanda; le parole chiave danno il nome ai file esportati per fonte. L'ordine della tabella è la numerazione dei file.</div>
+    <div class="src-scroll"><table class="src-tbl">
+      <thead><tr><th>#</th><th>File</th><th>Riferimento</th><th>Parole chiave → nome file</th><th>Domande</th><th></th></tr></thead>
+      <tbody id="src-tbody">${genSources.map(srcRowHtml).join('')}</tbody>
+    </table></div>`,
+    `<span id="src-summary" class="rc" style="flex:1;font-size:.8rem;color:var(--muted)"></span><button class="bn" onclick="closeGen()">Annulla</button><button class="bs" id="src-next" onclick="goToConfig()">Continua →</button>`);
+  updateSrcSummary();
+}
+function updateSrcRow(g,fromDetect){
+  const st=document.getElementById('ss-'+g.key);if(!st)return;
+  st.innerHTML=srcStatusHtml(g);
+  const row=document.getElementById('sr-'+g.key);
+  const ready=g.status==='ready';
+  row?.querySelectorAll('textarea,input,button[title="Rileva di nuovo"]').forEach(el=>el.disabled=!ready);
+  row?.classList.toggle('srow-err',g.status==='error');
+  const r=document.getElementById('sref-'+g.key),k=document.getElementById('skw-'+g.key),kp=document.getElementById('skp-'+g.key);
+  if(r&&document.activeElement!==r&&(fromDetect||!g.touchedRef))r.value=g.ref;
+  if(k&&document.activeElement!==k&&(fromDetect||!g.touchedKw))k.value=g.keywords.join(', ');
+  if(kp)kp.textContent=kwSlug(g.keywords);
+}
+function updateSrcSummary(){
+  const el=document.getElementById('src-summary');if(!el)return;
+  const ready=genSources.filter(g=>g.status==='ready'),reading=genSources.filter(g=>g.status==='reading').length,err=genSources.filter(g=>g.status==='error').length;
+  const tot=ready.reduce((a,g)=>a+(g.n||0),0);
+  el.textContent=`${ready.length} fonti pronte${reading?` · ${reading} in lettura`:''}${err?` · ${err} non leggibili (saranno escluse)`:''} · ${tot} domande in tutto`;
+  const nx=document.getElementById('src-next');if(nx)nx.disabled=!ready.length||reading>0;
+}
+function setGenRef(key,v){const g=genSources.find(x=>x.key===key);if(g){g.ref=v;g.touchedRef=true;}}
+function setGenKw(key,v){const g=genSources.find(x=>x.key===key);if(!g)return;g.keywords=v.split(/[,;]/).map(s=>s.trim().toLowerCase()).filter(Boolean).slice(0,6);g.touchedKw=true;const kp=document.getElementById('skp-'+key);if(kp)kp.textContent=kwSlug(g.keywords);}
+function setGenN(key,v){const g=genSources.find(x=>x.key===key);if(g){g.n=Math.max(1,Math.min(60,parseInt(v)||1));updateSrcSummary();}}
+function setAllN(n){cfgN=n;genSources.forEach(g=>g.n=n);renderSourcesStep();}
+function moveGenSrc(key,d){const i=genSources.findIndex(x=>x.key===key),j=i+d;if(i<0||j<0||j>=genSources.length)return;[genSources[i],genSources[j]]=[genSources[j],genSources[i]];renderSourcesStep();}
+function removeGenSrc(key){genSources=genSources.filter(x=>x.key!==key);renderSourcesStep();}
+function goToConfig(){
+  if(genSources.some(g=>g.status==='reading')){toast('Attendi la fine della lettura dei file.');return;}
+  genSources=genSources.filter(g=>g.status==='ready');
+  if(!genSources.length){toast('Nessuna fonte leggibile.');showGenStep('upload');return;}
+  const missing=genSources.filter(g=>!g.ref.trim());
+  if(missing.length){toast(`Manca il riferimento per ${missing.length} ${missing.length===1?'fonte':'fonti'}: inseriscilo prima di continuare.`,5000);renderSourcesStep();return;}
+  showGenStep('config');
+}
 function setCfgLang(l){cfgLang=l;document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',b.dataset.l===l));}
-async function handleSrcFile(file){if(!file)return;srcName=file.name;const isPDF=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');if(isPDF){showGenStep('generating');document.getElementById('spin-msg').textContent='Caricamento PDF.js…';try{await loadPDFJS();document.getElementById('spin-msg').textContent=`Lettura "${file.name}"…`;srcText=await extractPDFText(file);if(!srcText)throw new Error('Nessun testo (PDF potrebbe essere una scansione).');showGenStep('config');}catch(err){showGenError(err.message);}}else{const r=new FileReader();r.onload=e=>{srcText=e.target.result.trim();showGenStep('config');};r.onerror=()=>showGenError('Errore lettura.');r.readAsText(file);}}
-async function startGeneration(){const types=[];if(document.getElementById('ct-mcqs')?.checked)types.push('mcq_single');if(document.getElementById('ct-mcqm')?.checked)types.push('mcq_multiple');if(document.getElementById('ct-tf')?.checked)types.push('true_false');if(document.getElementById('ct-sa')?.checked)types.push('short_answer');if(!types.length){alert('Seleziona almeno un tipo.');return;}const focus=document.getElementById('cfg-focus')?.value?.trim()||'';
-  srcTitle=(document.getElementById('cfg-srctitle')?.value?.trim()||srcName).trim();
-  showGenStep('generating');try{await generateQuestions(cfgN,types,focus,cfgLang,srcTitle);}catch(err){showGenError(err.message||'Errore imprevisto.');}}
-async function generateQuestions(n,types,focus,lang,sourceTitle){
-  const srcWord = SOURCE_WORD[lang]; // undefined per 'auto': il modello sceglierà la parola corretta
-  let citationInstr = '';
-  if (sourceTitle) {
-    citationInstr = srcWord
-      ? `\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con — (${srcWord}: ${sourceTitle}) — incluse le parentesi tonde. Non omettere mai questa citazione in nessuna domanda.`
-      : `\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con la citazione della fonte tra parentesi tonde, usando la traduzione corretta della parola "Source" nella lingua in cui stai scrivendo le domande (es. "Fonte" in italiano, "Source" in inglese, "Source" in francese, "Quelle" in tedesco, "Fuente" in spagnolo). Titolo della fonte: ${sourceTitle}. Non omettere mai questa citazione.`;
+
+// ---- generazione
+async function startGeneration(){
+  const types=[];
+  if(document.getElementById('ct-mcqs')?.checked)types.push('mcq_single');
+  if(document.getElementById('ct-mcqm')?.checked)types.push('mcq_multiple');
+  if(document.getElementById('ct-tf')?.checked)types.push('true_false');
+  if(document.getElementById('ct-sa')?.checked)types.push('short_answer');
+  if(!types.length){toast('Seleziona almeno un tipo.');return;}
+  if(!getApiKey()){toast('Chiave API non impostata: aprila da ⚙ Impostazioni.',5000);return;}
+  genCfg={types,focus:document.getElementById('cfg-focus')?.value?.trim()||'',lang:cfgLang};
+  genSources.forEach(g=>{g.genStatus='waiting';g.genCount=0;g.genErr='';g.questions=[];});
+  genRunning=true;genCancel=false;
+  showGenStep('generating');
+  for(const g of genSources){
+    if(genCancel)break;
+    g.genStatus='running';renderGenProgress();
+    try{
+      g.questions=await generateForSource(g,genCfg);
+      g.genCount=g.questions.length;g.genStatus='done';
+    }catch(e){g.genStatus='error';g.genErr=e?.message||'errore';}
+    renderGenProgress();
   }
-  const system=`Sei un esperto di didattica universitaria. Genera esattamente ${n} domande per un quiz basate ESCLUSIVAMENTE sul documento fornito.\nTipi (distribuisci equamente): ${types.map(t=>TYPE_LABEL[t]).join(', ')}.${focus?`\nFocus: "${focus}".`:''}\n${LANG_INSTR[lang]||LANG_INSTR.auto}${citationInstr}\nCriteri: concetti chiave, opzioni MCQ plausibili, T/F non banali, risposte brevi verificabili.\nRestituisci SOLO un array JSON. Formato oggetto (null per campi non applicabili):\n{"type":"mcq_single"|"mcq_multiple"|"true_false"|"short_answer","prompt":"...","opts":["..."],"correct":0,"corrects":[0,1],"answer":"..."}`;
-  if(!getApiKey())throw new Error('Chiave API non impostata. Aprila da ⚙ Impostazioni e riprova.');
-  const rawText=await callClaude(`Documento:\n\n${srcText.slice(0,getSettings().maxChars)}`,{system,model:getSettings().genModel,maxTokens:8000});
+  genRunning=false;
+  if(genCancel){genCancel=false;return;}
+  pendingQs=genSources.flatMap(g=>(g.questions||[]).map(q=>({...q,_gkey:g.key})));
+  if(!pendingQs.length){renderGenProgress(true);return;}
+  pendingSelected=new Set(pendingQs.map((_,i)=>i));
+  if(genSources.some(g=>g.genStatus==='error'))renderGenProgress(true);
+  else showGenReview();
+}
+function renderGenProgress(finished){
+  const done=genSources.filter(g=>g.genStatus==='done'||g.genStatus==='error').length;
+  const rows=genSources.map((g,i)=>{
+    const ic={waiting:'○',running:'⏳',done:'✓',error:'✗'}[g.genStatus]||'○';
+    const info=g.genStatus==='done'?`${g.genCount} domande`:g.genStatus==='error'?esc(g.genErr):g.genStatus==='running'?'generazione…':`${g.n} richieste`;
+    return`<div class="gp-row gp-${g.genStatus}"><span class="gp-ic">${ic}</span><b>${String(i+1).padStart(2,'0')}</b><span class="gp-ref">${esc(g.ref)}</span><span class="gp-info">${info}</span></div>`;
+  }).join('');
+  const failed=genSources.filter(g=>g.genStatus==='error');
+  const foot=finished
+    ?`<button class="bn" onclick="closeGen()">Chiudi</button>${failed.length?`<button class="bp" onclick="retryFailed()">↻ Riprova le ${failed.length} non riuscite</button>`:''}${pendingQs.length?`<button class="bs" onclick="showGenReview()">Rivedi ${pendingQs.length} domande →</button>`:''}`
+    :`<button class="bn" onclick="cancelGeneration()">Interrompi</button>`;
+  setGenHtml(`${finished?'':'<div class="spin" style="width:24px;height:24px;margin:0 0 .6rem"></div>'}
+    <div class="spin-msg" style="margin-bottom:.55rem">${finished?(pendingQs.length?`Generazione terminata: ${failed.length} ${failed.length===1?'fonte non riuscita':'fonti non riuscite'}.`:'Nessuna domanda generata.'):`Generazione: fonte ${Math.min(done+1,genSources.length)} di ${genSources.length}`}</div>
+    <div class="gp-list">${rows}</div>`,foot);
+}
+function cancelGeneration(){
+  genCancel=true;
+  pendingQs=genSources.flatMap(g=>(g.questions||[]).map(q=>({...q,_gkey:g.key})));
+  pendingSelected=new Set(pendingQs.map((_,i)=>i));
+  genSources.forEach(g=>{if(g.genStatus==='running'||g.genStatus==='waiting'){g.genStatus='error';g.genErr='interrotta';}});
+  genRunning=false;renderGenProgress(true);
+}
+async function retryFailed(){
+  const failed=genSources.filter(g=>g.genStatus==='error');
+  genRunning=true;genCancel=false;
+  for(const g of failed){
+    if(genCancel)break;
+    g.genStatus='running';g.genErr='';renderGenProgress();
+    try{g.questions=await generateForSource(g,genCfg);g.genCount=g.questions.length;g.genStatus='done';}
+    catch(e){g.genStatus='error';g.genErr=e?.message||'errore';}
+    renderGenProgress();
+  }
+  genRunning=false;
+  if(genCancel){genCancel=false;return;}
+  pendingQs=genSources.flatMap(g=>(g.questions||[]).map(q=>({...q,_gkey:g.key})));
+  pendingSelected=new Set(pendingQs.map((_,i)=>i));
+  renderGenProgress(true);
+}
+async function generateForSource(g,{types,focus,lang}){
+  const n=g.n,sourceTitle=g.ref.trim();
+  const srcWord=SOURCE_WORD[lang];
+  let citationInstr='';
+  if(sourceTitle){
+    citationInstr=srcWord
+      ?`\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con — (${srcWord}: ${sourceTitle}) — incluse le parentesi tonde. Non omettere mai questa citazione in nessuna domanda.`
+      :`\nCITAZIONE OBBLIGATORIA: ogni campo "prompt" deve terminare con la citazione della fonte tra parentesi tonde, usando la traduzione corretta della parola "Source" nella lingua in cui stai scrivendo le domande (es. "Fonte" in italiano, "Source" in inglese, "Source" in francese, "Quelle" in tedesco, "Fuente" in spagnolo). Titolo della fonte: ${sourceTitle}. Non omettere mai questa citazione.`;
+  }
+  const system=`Sei un esperto di didattica universitaria. Genera esattamente ${n} domande per un quiz basate ESCLUSIVAMENTE sul documento fornito.\nTipi (distribuisci equamente): ${types.map(t=>TYPE_LABEL[t]).join(', ')}.${focus?`\nFocus: "${focus}".`:''}\n${LANG_INSTR[lang]||LANG_INSTR.auto}${citationInstr}\nCriteri: concetti chiave, opzioni MCQ plausibili, T/F non banali, risposte brevi verificabili. Testo di domande e opzioni su una sola riga.\nRestituisci SOLO un array JSON. Formato oggetto (null per campi non applicabili):\n{"type":"mcq_single"|"mcq_multiple"|"true_false"|"short_answer","prompt":"...","opts":["..."],"correct":0,"corrects":[0,1],"answer":"..."}`;
+  const rawText=await callClaude(`Documento:\n\n${g.text.slice(0,getSettings().maxChars)}`,{system,model:getSettings().genModel,maxTokens:Math.min(16000,2000+n*400)});
   const questions=extractJSONArray(rawText);
-  if(!questions?.length)throw new Error('Risposta AI non JSON valido. Riprova.');
-  pendingQs=questions.map(q=>normalizeQ(q,lang)).filter(Boolean);
-  if(!pendingQs.length)throw new Error('Nessuna domanda valida estratta.');
-  pendingSelected=new Set(pendingQs.map((_,i)=>i));showGenReview();
+  if(!questions?.length)throw new Error('risposta non in formato JSON valido');
+  const out=questions.map(q=>normalizeQ(q,lang)).filter(Boolean).filter(q=>types.includes(q.type));
+  if(!out.length)throw new Error('nessuna domanda valida estratta');
+  return out;
 }
 function normalizeQ(q,lang){
   if(!q||!String(q.prompt||'').trim())return null;
@@ -1131,36 +1359,33 @@ function normalizeQ(q,lang){
   if(type==='short_answer'){const answer=String(q.answer||'').trim();if(!answer)return null;return{type,prompt,answer,...m};}
   return null;
 }
-function showGenReview(){ reviewPage=0; renderReviewPage(); }
 
+// ---- revisione
+function showGenReview(){reviewPage=0;genBox(false);renderReviewPage();}
 function renderReviewPage(){
-  const n=pendingQs.length, q=pendingQs[reviewPage];
-  if(!q) return;
-  const sel=pendingSelected.size, isSel=pendingSelected.has(reviewPage);
+  const n=pendingQs.length,q=pendingQs[reviewPage];
+  if(!q)return;
+  const sel=pendingSelected.size,isSel=pendingSelected.has(reviewPage);
   const ak=aikenCheck(q),gt=giftCheck(q),mx=mxmlCheck(q);
+  const gi=genSources.findIndex(g=>g.key===q._gkey),g=genSources[gi];
   let qBody='';
-  if(q.type==='short_answer'){
-    qBody=`<div class="sa-ans">${esc(q.answer||'(vuota)')}</div>`;
-  } else {
+  if(q.type==='short_answer'){qBody=`<div class="sa-ans">${esc(q.answer||'(vuota)')}</div>`;}
+  else{
     const multi=q.type==='mcq_multiple',cs=multi?new Set(q.corrects||[]):null;
-    qBody=`<ul class="opts">${(q.opts||[]).map((o,j)=>{
-      const cor=multi?cs.has(j):j===q.correct;
-      return`<li class="opt${cor?' cor':''}"><span class="lt">${L(j)}.</span>${esc(o)}</li>`;
-    }).join('')}</ul>`;
+    qBody=`<ul class="opts">${(q.opts||[]).map((o,j)=>{const cor=multi?cs.has(j):j===q.correct;return`<li class="opt${cor?' cor':''}"><span class="lt">${L(j)}.</span>${esc(o)}</li>`;}).join('')}</ul>`;
   }
-  const dots=pendingQs.map((_,i)=>
-    `<span class="rev-dot${i===reviewPage?' cur':''}${pendingSelected.has(i)?' sel':''}"
-      title="Domanda ${i+1}${pendingSelected.has(i)?' ✓':' ○'}" onclick="goReviewPage(${i})"></span>`
-  ).join('');
+  const srcSel=g?genSources.map((x,xi)=>{const idx=pendingQs.map((p,pi)=>p._gkey===x.key?pi:-1).filter(pi=>pi>=0);const s=idx.filter(pi=>pendingSelected.has(pi)).length;return`<button class="pill${x.key===q._gkey?' on':''}" onclick="goReviewPage(${idx[0]??0})" ${idx.length?'':'disabled'} title="${esc(x.ref)}">${String(xi+1).padStart(2,'0')} · ${s}/${idx.length}</button>`;}).join(''):'';
+  const dots=pendingQs.map((p,i)=>`<span class="rev-dot${i===reviewPage?' cur':''}${pendingSelected.has(i)?' sel':''}" title="Domanda ${i+1}${pendingSelected.has(i)?' ✓':' ○'}" onclick="goReviewPage(${i})"></span>`).join('');
   setGenHtml(`
     <div class="rev-topbar">
       <span class="rev-selcount">${sel} / ${n} selezionate</span>
       <div style="display:flex;gap:.3rem;margin-left:auto;flex-wrap:wrap">
         <button class="sm bn" onclick="closeGen()">Annulla</button>
-        <button class="sm bn" onclick="showGenStep('config')">↺ Rigenera</button>
+        <button class="sm bn" onclick="showGenStep('sources')">↺ Fonti</button>
         <button class="sm bs" onclick="doImport()">✓ Importa (${sel})</button>
       </div>
     </div>
+    ${genSources.length>1?`<div class="pill-row" style="margin-bottom:.45rem">${srcSel}</div>`:''}
     <div class="rev-navbar">
       <button class="sm be" onclick="goReviewPage(${reviewPage-1})" ${reviewPage===0?'disabled':''}>◀ Prec</button>
       <span class="rev-pos">${reviewPage+1} / ${n}</span>
@@ -1168,10 +1393,9 @@ function renderReviewPage(){
     </div>
     <div class="rev-slide${isSel?'':' skip'}">
       <div class="rev-slide-hd">
-        <input type="checkbox" ${isSel?'checked':''} onchange="togglePendingPage(this.checked)"
-          style="width:14px;height:14px;accent-color:var(--ok);cursor:pointer;flex-shrink:0">
+        <input type="checkbox" ${isSel?'checked':''} onchange="togglePendingPage(this.checked)" style="width:14px;height:14px;accent-color:var(--ok);cursor:pointer;flex-shrink:0">
+        ${g?`<span class="badge bsrc" title="${esc(g.ref)}">📄 ${String(gi+1).padStart(2,'0')} · ${esc(g.keywords.join(', ')||g.filename)}</span>`:''}
         <span class="badge ${TYPE_CSS[q.type]||'bmcq'}">${TYPE_LABEL[q.type]||q.type}</span>
-        <span class="badge ${DIFF_CSS[q.difficulty||2]}">${DIFF_LABEL[q.difficulty||2]}</span>
         <span class="badge ${ak.ok?'baok':'bano'}">${ak.ok?'✓':'✗'} AK</span>
         <span class="badge ${gt.ok?'bgok':'bgno'}">${gt.ok?'✓':'✗'} GF</span>
         <span class="badge ${mx.ok?'bxok':'bxno'}">${mx.ok?'✓':'✗'} XML</span>
@@ -1181,26 +1405,45 @@ function renderReviewPage(){
     </div>
     <div class="rev-dots">${dots}</div>`);
 }
+function goReviewPage(i){if(i<0||i>=pendingQs.length)return;reviewPage=i;renderReviewPage();}
+function togglePendingPage(checked){if(checked)pendingSelected.add(reviewPage);else pendingSelected.delete(reviewPage);renderReviewPage();}
 
-function goReviewPage(i){
-  if(i<0||i>=pendingQs.length) return;
-  reviewPage=i; renderReviewPage();
+// Collega (o crea) la fonte nel registro: stessa fonte = stesso riferimento.
+function ensureSource({ref,keywords=[],filename='',chars=0}){
+  const norm=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+  let s=sources.find(x=>norm(x.ref)===norm(ref));
+  if(s){if(keywords.length)s.keywords=keywords;if(filename&&!s.filename)s.filename=filename;return s;}
+  s={id:'s'+(srcUid++),num:sources.length+1,ref:String(ref).trim(),keywords:[...keywords],filename,chars};
+  sources.push(s);return s;
 }
-function togglePendingPage(checked){
-  if(checked) pendingSelected.add(reviewPage);
-  else pendingSelected.delete(reviewPage);
-  renderReviewPage();
+function doImport(){
+  if(!pendingSelected.size){toast('Seleziona almeno una domanda.');return;}
+  const idx=[...pendingSelected].sort((a,b)=>a-b);
+  const srcByKey={};
+  genSources.forEach(g=>{if(idx.some(i=>pendingQs[i]._gkey===g.key))srcByKey[g.key]=ensureSource({ref:g.ref,keywords:g.keywords,filename:g.filename,chars:g.chars});});
+  const toAdd=idx.map(i=>{const q=JSON.parse(JSON.stringify(pendingQs[i]));q.source_id=srcByKey[q._gkey]?.id||'';delete q._gkey;q.id='q'+(uid++);return q;});
+  qs.push(...toAdd);
+  const nSrc=Object.keys(srcByKey).length,firstId=toAdd[0].id;
+  closeGen();render();persistState();
+  toast(`Importate ${toAdd.length} domande da ${nSrc} ${nSrc===1?'fonte':'fonti'}.`);
+  requestAnimationFrame(()=>document.getElementById('qc-'+firstId)?.scrollIntoView({behavior:'smooth',block:'center'}));
 }
-function togglePending(i,checked){if(checked)pendingSelected.add(i);else pendingSelected.delete(i);}
-function doImport(){if(!pendingSelected.size){alert('Seleziona almeno una domanda.');return;}const toAdd=[...pendingSelected].sort((a,b)=>a-b).map(i=>{const q=JSON.parse(JSON.stringify(pendingQs[i]));q.id='q'+(uid++);return q;});qs.push(...toAdd);const firstId=toAdd[0].id;closeGen();render();requestAnimationFrame(()=>document.getElementById('qc-'+firstId)?.scrollIntoView({behavior:'smooth',block:'center'}));}
-function showGenError(msg){setGenHtml(`<div class="err-box"><b>⚠ Errore</b>${esc(msg)}</div><div class="err-act"><button class="bn" onclick="showGenStep('upload')">← Nuova fonte</button>${srcText?`<button class="bp" onclick="showGenStep('config')">↩ Config</button>`:''}</div>`);}
+function showGenError(msg){setGenHtml(`<div class="err-box"><b>⚠ Errore</b>${esc(msg)}</div><div class="err-act"><button class="bn" onclick="showGenStep('upload')">← Carica fonti</button>${genSources.length?`<button class="bp" onclick="showGenStep('sources')">↩ Fonti</button>`:''}</div>`);}
+function extractJSONObject(text){
+  if(!text)return null;
+  const t=text.replace(/```(?:json)?\s*/gi,'').replace(/```/g,'').trim();
+  try{const r=JSON.parse(t);if(r&&typeof r==='object'&&!Array.isArray(r))return r;}catch(e){}
+  const a=t.indexOf('{'),b=t.lastIndexOf('}');
+  if(a<0||b<=a)return null;
+  try{return JSON.parse(t.slice(a,b+1));}catch(e){return null;}
+}
 
 // ── JSON EXTRACTOR ────────────────────────────────────────────────────
 function extractJSONArray(text){if(!text)return null;try{const r=JSON.parse(text.trim());if(Array.isArray(r))return r;}catch(e){}const stripped=text.replace(/```(?:json)?\s*/gi,'').replace(/```/g,'').trim();try{const r=JSON.parse(stripped);if(Array.isArray(r))return r;}catch(e){}const src=stripped||text;const start=src.indexOf('[');if(start===-1)return null;let depth=0,end=-1;for(let i=start;i<src.length;i++){if(src[i]==='[')depth++;else if(src[i]===']'){depth--;if(depth===0){end=i;break;}}}if(end===-1)return null;try{const r=JSON.parse(src.slice(start,end+1));return Array.isArray(r)?r:null;}catch(e){return null;}}
 
 // ── PDF.js ────────────────────────────────────────────────────────────
 async function loadPDFJS(){if(window.pdfjsLib)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';res();};s.onerror=()=>rej(new Error('Impossibile caricare PDF.js.'));document.head.appendChild(s);});}
-async function extractPDFText(file){return new Promise((res,rej)=>{const reader=new FileReader();reader.onload=async e=>{try{const pdf=await pdfjsLib.getDocument({data:new Uint8Array(e.target.result)}).promise;let text='';for(let i=1;i<=Math.min(pdf.numPages,30);i++){const page=await pdf.getPage(i);const content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n';}res(text.trim());}catch(err){rej(err);}};reader.onerror=()=>rej(new Error('Errore lettura.'));reader.readAsArrayBuffer(file);});}
+async function extractPDFText(file){return new Promise((res,rej)=>{const reader=new FileReader();reader.onload=async e=>{try{const pdf=await pdfjsLib.getDocument({data:new Uint8Array(e.target.result)}).promise;let text='';for(let i=1;i<=Math.min(pdf.numPages,80);i++){const page=await pdf.getPage(i);const content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n';}res(text.trim());}catch(err){rej(err);}};reader.onerror=()=>rej(new Error('Errore lettura.'));reader.readAsArrayBuffer(file);});}
 
 // ── ZIP PACKAGING ─────────────────────────────────────────────────────
 let zipNaming={organization:'',course:'',module:'',assessmentType:'quiz',language:'it',version:'v1'};
@@ -1225,18 +1468,23 @@ function formatBytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB'
 function escX(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // Content builders (shared between ZIP and future use)
+function exportJSONItems(items){
+  return items.map(q=>{const s=getSrc(q.source_id);return{...q,source_num:s?s.num:null,source_ref:s?s.ref:'',source_keywords:s?s.keywords:[],aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok};});
+}
 function buildCSVContent(items){
   const mx=Math.max(0,...items.map(q=>(q.opts||[]).length));
-  const hdr=['id','type','prompt',...Array.from({length:mx},(_,i)=>`opt_${i+1}`),'correct_letter','answer','category','status','difficulty','exam_eligible','aiken_ok','gift_ok','mxml_ok'];
+  const hdr=['id','type','prompt',...Array.from({length:mx},(_,i)=>`opt_${i+1}`),'correct_letter','answer','category','status','difficulty','exam_eligible','source_num','source_ref','source_keywords','aiken_ok','gift_ok','mxml_ok'];
   const rows=items.map(q=>{
     const pad=[...(q.opts||[])];while(pad.length<mx)pad.push('');
     let cl='';if(q.type==='mcq_multiple')cl=(q.corrects||[]).map(i=>L(i)).join(';');else if(q.correct!=null)cl=L(q.correct);
-    return[q.id,q.type,q.prompt,...pad,cl,q.answer||'',q.moodle_category_path||'',q.bank_status||'draft',q.difficulty||2,q.exam_eligible?'true':'false',aikenCheck(q).ok?'YES':'NO',giftCheck(q).ok?'YES':'NO',mxmlCheck(q).ok?'YES':'NO'].map(ce).join(',');
+    const s=getSrc(q.source_id);
+    return[q.id,q.type,q.prompt,...pad,cl,q.answer||'',q.moodle_category_path||'',q.bank_status||'draft',q.difficulty||2,q.exam_eligible?'true':'false',s?s.num:'',s?s.ref:'',s?s.keywords.join('; '):'',aikenCheck(q).ok?'YES':'NO',giftCheck(q).ok?'YES':'NO',mxmlCheck(q).ok?'YES':'NO'].map(ce).join(',');
   });
   return[hdr.join(','),...rows].join('\n');
 }
+function aikenLine(s){return String(s||'').replace(/\s*[\r\n]+\s*/g,' ').trim();}
 function buildAIKENContent(items){
-  const lines=[];items.forEach(q=>{lines.push(q.prompt);q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${o}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});return lines.join('\n');
+  const lines=[];items.forEach(q=>{lines.push(aikenLine(q.prompt));q.opts.forEach((o,i)=>lines.push(`${L(i)}. ${aikenLine(o)}`));lines.push(`ANSWER: ${L(q.correct)}`);lines.push('');});return lines.join('\n');
 }
 function buildHTMLTable(items,title){
   const rows=items.map((q,i)=>{
@@ -1245,7 +1493,7 @@ function buildHTMLTable(items,title){
     else opts=`<ol type="A" style="margin:0;padding-left:16px">${(q.opts||[]).map((o,j)=>{const cor=q.type==='mcq_multiple'?(q.corrects||[]).includes(j):j===q.correct;return`<li${cor?' style="font-weight:700;color:#2e7d32"':''}>${escX(o)}</li>`;}).join('')}</ol>`;
     return`<tr><td>${i+1}</td><td>${escX(TYPE_LABEL[q.type]||q.type)}</td><td>${escX(q.prompt)}</td><td>${opts}</td><td>${DIFF_LABEL[q.difficulty||2]}</td><td>${BS_LABEL[q.bank_status||'draft']}</td><td>${q.exam_eligible?'⭐':''}</td><td style="font-size:.8em">${escX(q.moodle_category_path||'—')}</td></tr>`;
   }).join('');
-  return`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>${escX(title)}</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px;color:#1a1a2e}h1{color:#3d5a99;font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde3ec;padding:6px 8px;vertical-align:top;text-align:left}th{background:#3d5a99;color:#fff;font-size:12px}tr:nth-child(even){background:#f5f7fa}p{font-size:12px;color:#667}</style></head><body><h1>${escX(title)}</h1><p>Generato: ${new Date().toLocaleString('it-IT')} — Moodle Quiz Builder v1.6 | ${items.length} domande</p><table><thead><tr><th>#</th><th>Tipo</th><th>Domanda</th><th>Opzioni</th><th>Difficoltà</th><th>Stato</th><th>Esame</th><th>Categoria</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  return`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>${escX(title)}</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px;color:#1a1a2e}h1{color:#3d5a99;font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde3ec;padding:6px 8px;vertical-align:top;text-align:left}th{background:#3d5a99;color:#fff;font-size:12px}tr:nth-child(even){background:#f5f7fa}p{font-size:12px;color:#667}</style></head><body><h1>${escX(title)}</h1><p>Generato: ${new Date().toLocaleString('it-IT')} — Moodle Quiz Builder v1.7 | ${items.length} domande</p><table><thead><tr><th>#</th><th>Tipo</th><th>Domanda</th><th>Opzioni</th><th>Difficoltà</th><th>Stato</th><th>Esame</th><th>Categoria</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
 }
 function buildTXTSummary(items,title){
   const sep='='.repeat(Math.min(title.length,60));
@@ -1265,7 +1513,7 @@ function buildManifestJSON(items,scope){
   TYPES.forEach(t=>bt[t]=items.filter(q=>q.type===t).length);
   Object.keys(BS_LABEL).forEach(s=>bs2[s]=items.filter(q=>(q.bank_status||'draft')===s).length);
   [1,2,3].forEach(d=>bd[DIFF_LABEL[d]]=items.filter(q=>(q.difficulty||2)===d).length);
-  return{generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.6',scope,naming:{...zipNaming},
+  return{generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7',scope,naming:{...zipNaming},
     statistics:{total:items.length,by_type:bt,by_status:bs2,by_difficulty:bd,
       aiken_compatible:items.filter(q=>aikenCheck(q).ok).length,
       gift_compatible:items.filter(q=>giftCheck(q).ok).length,
@@ -1281,7 +1529,7 @@ function buildComplianceText(bankItems,examItems,allFiles){
   const lines=[
     'COMPLIANCE REPORT','=================',
     `Generato: ${new Date().toLocaleString('it-IT')}`,
-    `Tool: Moodle Quiz Builder v1.6`,`Naming base: ${buildBaseName()}`,'',
+    `Tool: Moodle Quiz Builder v1.7`,`Naming base: ${buildBaseName()}`,'',
     'BANCA DOMANDE','─────────────',
     `Item totali (non rifiutati): ${bankItems.length}`,
     `  Approvati   : ${bankItems.filter(q=>q.bank_status==='approved').length}`,
@@ -1308,10 +1556,10 @@ function buildComplianceText(bankItems,examItems,allFiles){
   return lines.join('\n');
 }
 function buildREADMEImport(){
-  return`README — IMPORTAZIONE IN MOODLE\n================================\n\n1. Moodle XML (consigliato — tutti i tipi)\n   File: *_moodle.xml\n   → Banca domande > Importa > "Moodle XML format"\n\n2. GIFT (tutti i tipi)\n   File: *.gift\n   → Banca domande > Importa > "GIFT format"\n\n3. AIKEN (solo MCQ risposta singola)\n   File: *_aiken.txt\n   → Banca domande > Importa > "Aiken format"\n\n4. CSV — solo per revisione in foglio di calcolo.\n   Non è un formato di importazione Moodle nativo.\n\nAVVERTENZE\n----------\n- Crea la categoria di destinazione in Moodle prima di importare\n- Gli item con status "rejected" non sono inclusi negli export\n- I file XML includono le categorie definite per ogni item\n\nVersione Moodle consigliata: 3.9+\nGenerato da: Moodle Quiz Builder v1.6`;
+  return`README — IMPORTAZIONE IN MOODLE\n================================\n\n1. Moodle XML (consigliato — tutti i tipi)\n   File: *_moodle.xml\n   → Banca domande > Importa > "Moodle XML format"\n\n2. GIFT (tutti i tipi)\n   File: *.gift\n   → Banca domande > Importa > "GIFT format"\n\n3. AIKEN (solo MCQ risposta singola)\n   File: *_aiken.txt\n   → Banca domande > Importa > "Aiken format"\n\n4. CSV — solo per revisione in foglio di calcolo.\n   Non è un formato di importazione Moodle nativo.\n\nAVVERTENZE\n----------\n- Crea la categoria di destinazione in Moodle prima di importare\n- Gli item con status "rejected" non sono inclusi negli export\n- I file XML includono le categorie definite per ogni item\n\nVersione Moodle consigliata: 3.9+\nGenerato da: Moodle Quiz Builder v1.7`;
 }
 function buildREADMEPackage(base,date,bankItems,examItems){
-  return`README — DESCRIZIONE PACCHETTO\n==============================\n\nNome: ${base}_package_${date}.zip\nGenerato: ${new Date().toLocaleString('it-IT')}\nTool: Moodle Quiz Builder v1.6\n\nNAMING CONVENTION\n-----------------\nOrganizzazione : ${zipNaming.organization||'(non specificata)'}\nCorso          : ${zipNaming.course||'(non specificato)'}\nModulo         : ${zipNaming.module||'(non specificato)'}\nTipo           : ${zipNaming.assessmentType}\nLingua         : ${zipNaming.language}\nVersione       : ${zipNaming.version}\n\nSTRUTTURA ZIP\n-------------\nquestion-bank/ — Banca domande (${bankItems.length} item non rifiutati)\nfinal-exam/    — Prova finale (${examItems.length} item selezionati)\nmanifests/     — Manifest JSON strutturati\ncompliance/    — Report di conformità e incompatibilità\nreadme/        — Documentazione, istruzioni, indice\n\nSTATISTICHE\n-----------\n${TYPES.map(t=>`${(TYPE_LABEL[t]||t).padEnd(16)}: ${bankItems.filter(q=>q.type===t).length} banca / ${examItems.filter(q=>q.type===t).length} prova`).join('\n')}\nAIKEN compatibili: ${bankItems.filter(q=>aikenCheck(q).ok).length}\nGIFT compatibili : ${bankItems.filter(q=>giftCheck(q).ok).length}\nXML compatibili  : ${bankItems.filter(q=>mxmlCheck(q).ok).length}`;
+  return`README — DESCRIZIONE PACCHETTO\n==============================\n\nNome: ${base}_package_${date}.zip\nGenerato: ${new Date().toLocaleString('it-IT')}\nTool: Moodle Quiz Builder v1.7\n\nNAMING CONVENTION\n-----------------\nOrganizzazione : ${zipNaming.organization||'(non specificata)'}\nCorso          : ${zipNaming.course||'(non specificato)'}\nModulo         : ${zipNaming.module||'(non specificato)'}\nTipo           : ${zipNaming.assessmentType}\nLingua         : ${zipNaming.language}\nVersione       : ${zipNaming.version}\n\nSTRUTTURA ZIP\n-------------\nquestion-bank/ — Banca domande (${bankItems.length} item non rifiutati)\nfinal-exam/    — Prova finale (${examItems.length} item selezionati)\nmanifests/     — Manifest JSON strutturati\ncompliance/    — Report di conformità e incompatibilità\nreadme/        — Documentazione, istruzioni, indice\n\nSTATISTICHE\n-----------\n${TYPES.map(t=>`${(TYPE_LABEL[t]||t).padEnd(16)}: ${bankItems.filter(q=>q.type===t).length} banca / ${examItems.filter(q=>q.type===t).length} prova`).join('\n')}\nAIKEN compatibili: ${bankItems.filter(q=>aikenCheck(q).ok).length}\nGIFT compatibili : ${bankItems.filter(q=>giftCheck(q).ok).length}\nXML compatibili  : ${bankItems.filter(q=>mxmlCheck(q).ok).length}`;
 }
 
 // ── ZIP BUILDER ───────────────────────────────────────────────────────
@@ -1325,12 +1573,12 @@ function buildZIPContents(){
 
   // question-bank
   const B='question-bank';
-  add(B,`${base}_bank_${date}.json`,JSON.stringify(bankItems.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok})),null,2));
+  add(B,`${base}_bank_${date}.json`,JSON.stringify(exportJSONItems(bankItems),null,2));
   add(B,`${base}_bank_${date}.csv`,buildCSVContent(bankItems));
   const aiB=bankItems.filter(q=>aikenCheck(q).ok);
   aiB.length?add(B,`${base}_bank_${date}_aiken.txt`,buildAIKENContent(aiB)):add(B,`${base}_bank_${date}_aiken.txt`,'','Nessuna domanda AIKEN compatibile');
   const giB=bankItems.filter(q=>giftCheck(q).ok);
-  if(giB.length){const l=['// GIFT — Moodle Quiz Builder v1.6',''];giB.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(B,`${base}_bank_${date}.gift`,l.join('\n'));}
+  if(giB.length){const l=['// GIFT — Moodle Quiz Builder v1.7',''];giB.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(B,`${base}_bank_${date}.gift`,l.join('\n'));}
   else add(B,`${base}_bank_${date}.gift`,'','Nessuna domanda GIFT compatibile');
   const xB=bankItems.filter(q=>mxmlCheck(q).ok);
   xB.length?add(B,`${base}_bank_${date}_moodle.xml`,buildMoodleXML(xB)):add(B,`${base}_bank_${date}_moodle.xml`,'','Nessuna domanda XML compatibile');
@@ -1340,7 +1588,7 @@ function buildZIPContents(){
   // final-exam
   const E='final-exam';
   if(examItems.length){
-    add(E,`${base}_exam_${date}.json`,JSON.stringify(examItems.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok})),null,2));
+    add(E,`${base}_exam_${date}.json`,JSON.stringify(exportJSONItems(examItems),null,2));
     add(E,`${base}_exam_${date}.csv`,buildCSVContent(examItems));
     const aiE=examItems.filter(q=>aikenCheck(q).ok);
     aiE.length?add(E,`${base}_exam_${date}_aiken.txt`,buildAIKENContent(aiE)):add(E,`${base}_exam_${date}_aiken.txt`,'','Nessuna domanda AIKEN nella prova');
@@ -1355,6 +1603,12 @@ function buildZIPContents(){
     files.push({folder:E,filename:'(vuoto)',content:'',included:false,reason:'Nessuna domanda selezionata per la Prova Finale'});
   }
 
+  // by-source: un file AIKEN numerato per ogni fonte
+  if(sources.length){
+    for(const f of buildPerSourceFiles(bankItems,{fmt:'aiken',prefix:'',catPerSource:false,includeNone:true}))
+      add('by-source',f.filename,f.content,f.content?'':f.reason);
+  }
+
   // manifests
   add('manifests',`manifest-bank_${date}.json`,JSON.stringify(buildManifestJSON(bankItems,'bank'),null,2));
   if(examItems.length)add('manifests',`manifest-exam_${date}.json`,JSON.stringify(buildManifestJSON(examItems,'exam'),null,2));
@@ -1367,7 +1621,7 @@ function buildZIPContents(){
   add('readme',`README-package_${date}.txt`,buildREADMEPackage(base,date,bankItems,examItems));
   // index-manifest last (references all other files)
   add('readme',`index-manifest_${date}.json`,JSON.stringify({
-    generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.6',
+    generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7',
     package:`${base}_package_${date}.zip`,naming:{...zipNaming},
     files:files.filter(f=>f.included).map(f=>({path:`${f.folder}/${f.filename}`,size_bytes:f.content.length,format:f.filename.split('.').pop()})),
     excluded:files.filter(f=>!f.included).map(f=>({path:`${f.folder}/${f.filename}`,reason:f.reason}))
@@ -1404,7 +1658,7 @@ function updateZIPTree(){
   const inclCount=files.filter(f=>f.included).length;
   const exclCount=files.filter(f=>!f.included).length;
   const totalBytes=files.filter(f=>f.included).reduce((a,f)=>a+f.content.length,0);
-  const FI={'question-bank':'📁','final-exam':'📋','manifests':'📑','compliance':'🔍','readme':'📖'};
+  const FI={'question-bank':'📁','final-exam':'📋','by-source':'📚','manifests':'📑','compliance':'🔍','readme':'📖'};
   let html='';
   folders.forEach(folder=>{
     html+=`<div class="ztfolder">${FI[folder]||'📁'} ${folder}/</div>`;
@@ -1439,6 +1693,141 @@ async function generateAndDownloadZIP(){
   }finally{
     if(btn){btn.textContent='⬇ Scarica ZIP';btn.disabled=false;}
   }
+}
+
+// ── ESPORTAZIONE PER FONTE ────────────────────────────────────────────
+// Un file per fonte, numerato nell'ordine del registro: 01_parole-chiave_aiken.txt …
+// Con GIFT/XML si può creare anche una categoria Moodle per fonte.
+let srcxCfg={fmt:'aiken',prefix:'',onlyApproved:false,catPerSource:true,includeNone:true};
+function slugify(s,max=60){
+  return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()
+    .replace(/['’`]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,max).replace(/-+$/,'');
+}
+function kwSlug(kw){return slugify((kw||[]).join(' '),60);}
+function srcFileStem(s){return kwSlug(s.keywords)||slugify((s.ref||'').split(/[.(]/)[0],40)||'fonte';}
+const SRCX_EXT={aiken:'_aiken.txt',gift:'.gift',xml:'_moodle.xml'};
+const SRCX_CHECK={aiken:aikenCheck,gift:giftCheck,xml:mxmlCheck};
+function srcCategory(s){return s?`$course$/top/${String(s.num).padStart(2,'0')} ${(s.keywords||[]).join(', ')||srcFileStem(s)}`:'$course$/top/Senza fonte';}
+function buildPerSourceFiles(items,{fmt='aiken',prefix='',catPerSource=true,includeNone=true}={}){
+  const check=SRCX_CHECK[fmt],ext=SRCX_EXT[fmt];
+  const pad=sources.length>99?3:2,pre=slugify(prefix,40);
+  const groups=sources.map(s=>({s,items:items.filter(q=>q.source_id===s.id)}));
+  const none=items.filter(q=>!getSrc(q.source_id));
+  if(includeNone&&none.length)groups.push({s:null,items:none});
+  return groups.map(({s,items:its})=>{
+    const ok=its.filter(q=>check(q).ok),excluded=its.length-ok.length;
+    const num=s?String(s.num).padStart(pad,'0'):'0'.repeat(pad);
+    const filename=`${pre?pre+'_':''}${num}_${s?srcFileStem(s):'senza-fonte'}${ext}`;
+    let content='';
+    if(ok.length){
+      if(fmt==='aiken')content=buildAIKENContent(ok);
+      else if(fmt==='gift'){
+        const l=[`// ${s?`Fonte ${s.num}: ${s.ref}`:'Domande senza fonte'}`,`// Moodle Quiz Builder v1.7`,''];
+        if(catPerSource)l.push(`$CATEGORY: ${srcCategory(s)}`,'');
+        ok.forEach(q=>{l.push(buildGIFT(q));l.push('');});content=l.join('\n');
+      }else content=buildMoodleXML(catPerSource?ok.map(q=>({...q,moodle_category_path:srcCategory(s)})):ok);
+    }
+    return{s,filename,content,total:its.length,count:ok.length,excluded,reason:ok.length?'':(its.length?`nessuna domanda compatibile (${its.length} escluse)`:'nessuna domanda')};
+  });
+}
+function buildSourceIndexCSV(files,fmt){
+  const hdr=['numero','file','riferimento','parole_chiave','domande_nel_file','escluse_formato','categoria_moodle'];
+  const rows=files.map(f=>[f.s?f.s.num:0,f.content?f.filename:'(non creato)',f.s?f.s.ref:'Domande senza fonte',f.s?(f.s.keywords||[]).join('; '):'',f.count,f.excluded,fmt==='aiken'?'(scegliere in Moodle all\'importazione)':(srcxCfg.catPerSource?srcCategory(f.s):'')].map(ce).join(','));
+  return'﻿'+[hdr.join(','),...rows].join('\n');
+}
+function srcxItems(){return qs.filter(q=>q.bank_status!=='rejected'&&(!srcxCfg.onlyApproved||q.bank_status==='approved'));}
+function openSrcExport(){
+  if(!sources.length){toast('Nessuna fonte registrata: genera le domande con «📚 Genera da paper» oppure assegna una fonte alle domande.',6000);return;}
+  let d=document.getElementById('srcx-modal');
+  if(!d){d=document.createElement('div');d.id='srcx-modal';d.className='mo';d.onclick=e=>{if(e.target===d)d.remove();};document.body.appendChild(d);}
+  renderSrcExport();
+}
+function setSrcx(k,v){srcxCfg[k]=v;renderSrcExport();}
+function renderSrcExport(){
+  const d=document.getElementById('srcx-modal');if(!d)return;
+  const files=buildPerSourceFiles(srcxItems(),srcxCfg);
+  const made=files.filter(f=>f.content),counts=made.filter(f=>f.s).map(f=>f.count);
+  const mn=Math.min(...counts),mx=Math.max(...counts);
+  const unbalanced=counts.length>1&&mx>0&&(mx-mn)/mx>0.2;
+  const totEx=files.reduce((a,f)=>a+f.excluded,0);
+  const radio=(v,l)=>`<label class="chk-row"><input type="radio" name="srcx-fmt" ${srcxCfg.fmt===v?'checked':''} onchange="setSrcx('fmt','${v}')"> ${l}</label>`;
+  d.innerHTML=`<div class="mo-box" style="width:min(760px,96vw)">
+    <div class="mo-hd"><span>⬇ Esporta un file per fonte</span><button class="sm be" onclick="document.getElementById('srcx-modal').remove()">✕</button></div>
+    <div class="mo-body">
+      <div class="pdf-row" style="gap:.6rem 1.4rem;margin-bottom:.7rem">
+        <div class="pdf-field"><label>Formato</label><div style="display:flex;flex-direction:column;gap:.25rem;margin-top:.2rem">${radio('aiken','AIKEN (solo MCQ singola)')}${radio('gift','GIFT')}${radio('xml','Moodle XML')}</div></div>
+        <div class="pdf-field"><label>Prefisso dei file <span class="hint">(opzionale)</span></label>
+          <input type="text" value="${esc(srcxCfg.prefix)}" placeholder="es. etica-ia-2026" onchange="setSrcx('prefix',this.value)">
+          <label class="chk-row" style="margin-top:.45rem"><input type="checkbox" ${srcxCfg.onlyApproved?'checked':''} onchange="setSrcx('onlyApproved',this.checked)"> Solo domande approvate</label>
+          <label class="chk-row"><input type="checkbox" ${srcxCfg.includeNone?'checked':''} onchange="setSrcx('includeNone',this.checked)"> Includi le domande senza fonte</label>
+          ${srcxCfg.fmt!=='aiken'?`<label class="chk-row"><input type="checkbox" ${srcxCfg.catPerSource?'checked':''} onchange="setSrcx('catPerSource',this.checked)"> Una categoria Moodle per fonte</label>`:''}
+        </div>
+      </div>
+      ${srcxCfg.fmt==='aiken'?'<div class="hint" style="margin-bottom:.5rem">AIKEN non contiene categorie: in Moodle importa ogni file nella categoria della sua fonte (Banca domande → Importa → formato Aiken → Categoria).</div>':''}
+      ${unbalanced?`<div class="bp-warn">⚠ Fonti sbilanciate: da ${mn} a ${mx} domande per file. Puoi generarne altre per le fonti più scarse o escluderne alcune nella banca.</div>`:''}
+      ${totEx?`<div class="bp-warn">⚠ ${totEx} domande non compatibili con ${srcxCfg.fmt.toUpperCase()} restano fuori dai file${srcxCfg.fmt==='aiken'?' (AIKEN accetta solo MCQ a risposta singola)':''}.</div>`:''}
+      <div class="zip-tree" style="margin-top:.5rem">
+        <div class="ztfolder">📚 ${made.length} file + indice</div>
+        ${files.map(f=>`<div class="ztfile ${f.content?'ok':'skip'}"><span style="min-width:1rem">${f.content?'✓':'✗'}</span><span class="ztn">${esc(f.filename)}</span><span class="ztreason" style="color:var(--muted);font-style:normal">${f.s?esc(f.s.ref.slice(0,70))+(f.s.ref.length>70?'…':''):'domande senza fonte'}</span><span class="ztsize">${f.content?`${f.count} dom.${f.excluded?` · ${f.excluded} escl.`:''}`:esc(f.reason)}</span></div>`).join('')}
+        <div class="ztfile ok"><span style="min-width:1rem">✓</span><span class="ztn">${esc((slugify(srcxCfg.prefix,40)?slugify(srcxCfg.prefix,40)+'_':'')+'00_indice-fonti.csv')}</span><span class="ztsize">numero, file, riferimento, parole chiave</span></div>
+      </div>
+    </div>
+    <div class="mo-foot"><span style="flex:1;font-size:.78rem;color:var(--muted)">Le fonti si riordinano e si rinominano da «📄 Fonti».</span>
+      <button class="bn" onclick="document.getElementById('srcx-modal').remove();openSourcesManager()">📄 Fonti</button>
+      <button class="bs" onclick="downloadSrcExport()" ${made.length?'':'disabled'}>⬇ Scarica ZIP (${made.length} file)</button></div>
+  </div>`;
+}
+async function downloadSrcExport(){
+  const files=buildPerSourceFiles(srcxItems(),srcxCfg).filter(f=>f.content);
+  if(!files.length){toast('Nessun file da esportare.');return;}
+  try{
+    await loadJSZip();
+    const zip=new JSZip(),pre=slugify(srcxCfg.prefix,40);
+    files.forEach(f=>zip.file(f.filename,f.content));
+    zip.file(`${pre?pre+'_':''}00_indice-fonti.csv`,buildSourceIndexCSV(buildPerSourceFiles(srcxItems(),srcxCfg),srcxCfg.fmt));
+    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+    await dl(`${pre||'quiz'}_per-fonte_${srcxCfg.fmt}_${getDateStr()}.zip`,blob,'application/zip');
+    document.getElementById('srcx-modal')?.remove();
+  }catch(e){toast('Errore nella creazione dello ZIP: '+e.message,6000);}
+}
+
+// ── GESTIONE FONTI ────────────────────────────────────────────────────
+function openSourcesManager(){
+  let d=document.getElementById('srcm-modal');
+  if(!d){d=document.createElement('div');d.id='srcm-modal';d.className='mo';d.onclick=e=>{if(e.target===d)closeSourcesManager();};document.body.appendChild(d);}
+  renderSourcesManager();
+}
+function closeSourcesManager(){document.getElementById('srcm-modal')?.remove();render();persistState();}
+function renderSourcesManager(){
+  const d=document.getElementById('srcm-modal');if(!d)return;
+  const none=qs.filter(q=>!getSrc(q.source_id)).length;
+  const rows=sources.map((s,i)=>{
+    const n=qs.filter(q=>q.source_id===s.id&&q.bank_status!=='rejected').length,ak=qs.filter(q=>q.source_id===s.id&&q.bank_status!=='rejected'&&aikenCheck(q).ok).length;
+    return`<tr>
+      <td class="snum">${String(s.num).padStart(2,'0')}</td>
+      <td><textarea rows="2" oninput="srcmSet('${s.id}','ref',this.value)">${esc(s.ref)}</textarea>${s.filename?`<div class="sfn" style="font-weight:400;color:var(--muted)">${esc(s.filename)}</div>`:''}</td>
+      <td><input type="text" value="${esc((s.keywords||[]).join(', '))}" oninput="srcmSet('${s.id}','keywords',this.value)"><div class="skwprev" id="smk-${s.id}">${esc(srcFileStem(s))}</div></td>
+      <td style="text-align:right;white-space:nowrap"><b>${n}</b><div class="hint">${ak} AIKEN</div></td>
+      <td class="sact"><button class="sm be" onclick="srcmMove('${s.id}',-1)" ${i===0?'disabled':''} title="Sposta su">▲</button><button class="sm be" onclick="srcmMove('${s.id}',1)" ${i===sources.length-1?'disabled':''} title="Sposta giù">▼</button><button class="sm bd" onclick="srcmDelete('${s.id}')" title="Rimuovi la fonte (le domande restano, senza fonte)">✕</button></td>
+    </tr>`;}).join('');
+  d.innerHTML=`<div class="mo-box" style="width:min(940px,97vw)">
+    <div class="mo-hd"><span>📄 Fonti della banca domande</span><button class="sm be" onclick="closeSourcesManager()">✕</button></div>
+    <div class="mo-body">
+      ${sources.length?`<div class="hint" style="margin-bottom:.5rem">L'ordine stabilisce la numerazione dei file esportati per fonte. Le parole chiave formano il nome del file; il riferimento resta quello citato nelle domande già generate.</div>
+      <div class="src-scroll"><table class="src-tbl"><thead><tr><th>#</th><th>Riferimento</th><th>Parole chiave → nome file</th><th>Domande</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+      :'<div class="epool-empty">Nessuna fonte registrata. Le fonti si creano generando domande con «📚 Genera da paper».</div>'}
+      ${none?`<div class="hint" style="margin-top:.6rem">${none} domande non hanno una fonte: puoi assegnarla dal pulsante ✎ di ogni domanda.</div>`:''}
+    </div>
+    <div class="mo-foot"><span style="flex:1"></span>${sources.length?'<button class="bsrcx" onclick="closeSourcesManager();openSrcExport()">⬇ Esporta per fonte</button>':''}<button class="bs" onclick="closeSourcesManager()">✓ Fatto</button></div>
+  </div>`;
+}
+function srcmSet(id,k,v){const s=getSrc(id);if(!s)return;if(k==='keywords'){s.keywords=v.split(/[,;]/).map(x=>x.trim().toLowerCase()).filter(Boolean).slice(0,6);const e=document.getElementById('smk-'+id);if(e)e.textContent=srcFileStem(s);}else s.ref=v;}
+function srcmMove(id,d){const i=sources.findIndex(s=>s.id===id),j=i+d;if(i<0||j<0||j>=sources.length)return;[sources[i],sources[j]]=[sources[j],sources[i]];renumberSources();renderSourcesManager();}
+let srcmDelArmed=null;
+function srcmDelete(id){
+  if(srcmDelArmed!==id){srcmDelArmed=id;toast('Premi di nuovo ✕ per rimuovere la fonte: le sue domande restano nella banca, senza fonte.',4000);setTimeout(()=>{if(srcmDelArmed===id)srcmDelArmed=null;},4000);return;}
+  srcmDelArmed=null;sources=sources.filter(s=>s.id!==id);qs.forEach(q=>{if(q.source_id===id)q.source_id='';});
+  if(fSrc===id)fSrc='';renumberSources();renderSourcesManager();
 }
 
 // ── PDF EXPORT ────────────────────────────────────────────────────────

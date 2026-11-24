@@ -36,7 +36,16 @@ La funzione «📚 Genera da paper», compreso il rilevamento automatico del rif
 
 La chiave resta salvata solo nel browser di quel computer e viene inviata soltanto ad `api.anthropic.com`. L'uso si paga a consumo sul Console, separatamente dall'abbonamento a Claude. Nelle impostazioni puoi scegliere il modello e quanto testo della fonte inviare: più testo significa domande su più capitoli, ma anche un costo maggiore.
 
-## 4. Dati e aggiornamenti
+## 4. Più fonti e un file per fonte (dalla versione 1.7)
+
+1. Premi «📚 Genera da paper» e seleziona tutti i PDF insieme, fino a 30.
+2. Per ogni fonte l'app legge il testo e propone il riferimento bibliografico e due-quattro parole chiave. Controllali e correggili nella tabella. Il riferimento viene citato in ogni domanda; le parole chiave formano il nome del file. Nella stessa tabella decidi quante domande generare per ciascuna fonte e in che ordine numerarle.
+3. Scegli tipi e lingua e avvia: la generazione procede una fonte alla volta. Se una fonte non va a buon fine puoi riprovare solo quella.
+4. Rivedi le domande e importale. Ognuna resta legata alla sua fonte, visibile come «F01 · parole chiave».
+5. «⬇ Per fonte» scarica uno ZIP con un file per fonte, per esempio `01_governance-algoritmica_aiken.txt`, insieme a `00_indice-fonti.csv` con numero, riferimento e parole chiave. In AIKEN entrano solo le MCQ a risposta singola. Con GIFT o XML l'app può creare anche una categoria Moodle per ogni fonte.
+6. Da «📄 Fonti» cambi l'ordine (cioè la numerazione dei file), il riferimento e le parole chiave.
+
+## 5. Dati e aggiornamenti
 
 - La banca domande si salva automaticamente nel browser in cui usi l'app. Per spostarla su un altro computer esportala con «⬇ JSON» e caricala con «⚙ Impostazioni» → «⬆ Importa JSON».
 - Se cancelli i dati del sito dal browser, cancelli anche la banca. Per questo conviene esportare un JSON di tanto in tanto.

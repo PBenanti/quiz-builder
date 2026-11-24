@@ -1079,13 +1079,13 @@ function L(i){return String.fromCharCode(65+i);}
 // domande per fonte) → tipi/lingua → generazione fonte per fonte → revisione → importazione.
 let pendingQs=[],pendingSelected=new Set(),cfgN=10,cfgLang='auto',reviewPage=0;
 let genSources=[],genRunning=false,genCancel=false,genCfg=null,genKeySeq=1;
-const LANGS=[{id:'auto',label:'Auto'},{id:'it',label:'🇮🇹 Italiano'},{id:'en',label:'🇬🇧 English'},{id:'fr',label:'🇫🇷 Français'},{id:'de',label:'🇩🇪 Deutsch'},{id:'es',label:'🇪🇸 Español'}];
+const LANGS=[{id:'auto',label:'Come la fonte'},{id:'it',label:'🇮🇹 Italiano'},{id:'en',label:'🇬🇧 English'},{id:'fr',label:'🇫🇷 Français'},{id:'de',label:'🇩🇪 Deutsch'},{id:'es',label:'🇪🇸 Español'}];
 const LANG_INSTR={auto:'Usa la stessa lingua del documento sorgente.',it:'Genera tutte le domande in italiano.',en:'Generate all questions in English.',fr:'Génère toutes les questions en français.',de:'Generiere alle Fragen auf Deutsch.',es:'Genera todas las preguntas en español.'};
 const TF_DEFAULTS={auto:['Vero','Falso'],it:['Vero','Falso'],en:['True','False'],fr:['Vrai','Faux'],de:['Wahr','Falsch'],es:['Verdadero','Falso']};
 const SOURCE_WORD={it:'Fonte',en:'Source',fr:'Source',de:'Quelle',es:'Fuente'};
 const MAX_GEN_SOURCES=30;
 
-function openGen(){genSources=[];pendingQs=[];pendingSelected=new Set();document.getElementById('gen-modal').style.display='flex';showGenStep('upload');}
+function openGen(){const ml=lsGet('mqb.lang');if(ml&&LANGS.some(l=>l.id===ml))cfgLang=ml;genSources=[];pendingQs=[];pendingSelected=new Set();document.getElementById('gen-modal').style.display='flex';showGenStep('upload');}
 function closeGen(){
   if(genRunning){genCancel=true;}
   document.getElementById('gen-modal').style.display='none';
@@ -1218,6 +1218,10 @@ function renderSourcesStep(){
     <div class="src-toolbar">
       <span class="cfg-lbl" style="margin:0">Domande per fonte</span>
       <div class="pill-row">${[5,8,10,15,20].map(n=>`<button class="pill${n===cfgN?' on':''}" data-n="${n}" onclick="setAllN(${n})">${n}</button>`).join('')}</div>
+      <span class="cfg-lbl" style="margin:0 0 0 .6rem">Lingua delle domande</span>
+      <select id="src-lang" onchange="setCfgLang(this.value)" style="font:.82rem/1.3 'Segoe UI',sans-serif;padding:.28rem .45rem;border:1px solid var(--border);border-radius:4px;background:#fff">
+        ${LANGS.map(l=>`<option value="${l.id}"${l.id===cfgLang?' selected':''}>${l.id==='auto'?'Come la fonte':l.label}</option>`).join('')}
+      </select>
       <span class="sep"></span>
       <button class="sm bp" onclick="document.getElementById('src-file').click()">＋ Aggiungi file</button>
     </div>
@@ -1262,7 +1266,7 @@ function goToConfig(){
   if(missing.length){toast(`Manca il riferimento per ${missing.length} ${missing.length===1?'fonte':'fonti'}: inseriscilo prima di continuare.`,5000);renderSourcesStep();return;}
   showGenStep('config');
 }
-function setCfgLang(l){cfgLang=l;document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',b.dataset.l===l));}
+function setCfgLang(l){cfgLang=l;try{lsSet('mqb.lang',l);}catch(e){}document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',b.dataset.l===l));const sl=document.getElementById('src-lang');if(sl)sl.value=l;}
 
 // ---- generazione
 async function startGeneration(){

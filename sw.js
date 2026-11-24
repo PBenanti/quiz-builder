@@ -2,7 +2,7 @@
 // Pagina: prima la rete (così gli aggiornamenti arrivano subito), copia in cache per l'uso offline.
 // Librerie CDN (PDF.js, JSZip): dalla cache, aggiornate in background.
 // Le chiamate ad api.anthropic.com non passano mai dalla cache.
-const VERSION = 'mqb-v1.7.0';
+const VERSION = 'mqb-v1.7.1';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-180.png'];
 const CDN = [

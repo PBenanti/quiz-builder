@@ -257,7 +257,7 @@ button:hover{filter:brightness(.9)}
 <body>
 <header>
   <h1>🧩 Moodle Quiz Builder</h1>
-  <span class="ver">v1.7 · dati salvati in questo browser</span>
+  <span class="ver">v1.7.1 · dati salvati in questo browser</span>
   <button class="sm" id="settings-btn" onclick="openSettings()" style="margin-left:.8rem;background:rgba(255,255,255,.16);color:#fff">⚙ Impostazioni</button>
   <button class="sm" id="install-btn" onclick="installApp()" style="display:none;margin-left:.4rem;background:#fff;color:#3d5a99;font-weight:700">⬇ Installa app</button>
 </header>
@@ -780,7 +780,7 @@ function rReport(){
     <div class="xsect">Esclusioni Moodle XML</div>${mxEx.length?mxEx.map(q=>`<div class="xi xm"><b>${esc(q.id)}</b><span>${esc(mxmlCheck(q).r)}</span></div>`).join(''):'<div class="empty">Nessuna 🎉</div>'}`;
 }
 function rAiken(){const comp=qs.filter(q=>aikenCheck(q).ok&&q.bank_status!=='rejected');return`<div class="pre">${esc(comp.length?buildAIKENContent(comp):'(nessuna)')}</div>`;}
-function rGIFT(){const comp=qs.filter(q=>giftCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const l=['// GIFT — Moodle Quiz Builder v1.7',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});return`<div class="pre">${esc(l.join('\n'))}</div>`;}
+function rGIFT(){const comp=qs.filter(q=>giftCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const l=['// GIFT — Moodle Quiz Builder v1.7.1',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});return`<div class="pre">${esc(l.join('\n'))}</div>`;}
 function rXML(){const comp=qs.filter(q=>mxmlCheck(q).ok&&q.bank_status!=='rejected');if(!comp.length)return`<div class="pre">(nessuna)</div>`;const xml=buildMoodleXML(comp);return`<div class="pre">${esc(xml.length>3500?xml.slice(0,3500)+'\n…':xml)}</div>`;}
 function rJSON(){const data=qs.map(q=>({...q,aikenCompatible:aikenCheck(q).ok,giftCompatible:giftCheck(q).ok,mxmlCompatible:mxmlCheck(q).ok}));return`<div class="pre">${esc(JSON.stringify(data,null,2))}</div>`;}
 
@@ -864,7 +864,7 @@ function doExportItems(fmt,items,suffix){
   } else if(fmt==='gift'){
     const comp=items.filter(q=>giftCheck(q).ok);
     if(!comp.length){alert('Nessuna domanda compatibile con GIFT.');return;}
-    const l=['// Moodle GIFT — Moodle Quiz Builder v1.7',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});
+    const l=['// Moodle GIFT — Moodle Quiz Builder v1.7.1',''];comp.forEach(q=>{l.push(buildGIFT(q));l.push('');});
     dl(`quiz_${suffix}.gift`,l.join('\n'),'text/plain');
   } else {
     const comp=items.filter(q=>mxmlCheck(q).ok);
@@ -1036,7 +1036,25 @@ let deferredInstall=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=document.getElementById('install-btn');if(b)b.style.display='';});
 window.addEventListener('appinstalled',()=>{deferredInstall=null;const b=document.getElementById('install-btn');if(b)b.style.display='none';toast('App installata.');});
 async function installApp(){if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice.catch(()=>{});deferredInstall=null;document.getElementById('install-btn').style.display='none';}
-if('serviceWorker' in navigator&&location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+// Aggiornamenti: il service worker nuovo prende il controllo e la pagina propone di ricaricare.
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>{
+    const hadController=!!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('sw.js').then(reg=>{
+      const check=()=>reg.update().catch(()=>{});
+      document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check();});
+      setInterval(check,30*60*1000);
+    }).catch(()=>{});
+    let shown=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||shown)return;shown=true;showUpdateBar();});
+  });
+}
+function showUpdateBar(){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:1001;background:#1a1a2e;color:#fff;padding:.55rem .6rem .55rem .9rem;border-radius:8px;font-size:.84rem;display:flex;gap:.7rem;align-items:center;box-shadow:0 4px 18px rgba(0,0,0,.25)';
+  d.innerHTML='<span>È disponibile una nuova versione dell\'app.</span><button class="sm bs" onclick="persistState();location.reload()">Ricarica</button><button class="sm be" onclick="this.parentNode.remove()">Più tardi</button>';
+  document.body.appendChild(d);
+}
 
 // alert() è disattivato nel frame: lo sostituisco con un avviso in pagina.
 function toast(msg,ms=4200){
@@ -1497,7 +1515,7 @@ function buildHTMLTable(items,title){
     else opts=`<ol type="A" style="margin:0;padding-left:16px">${(q.opts||[]).map((o,j)=>{const cor=q.type==='mcq_multiple'?(q.corrects||[]).includes(j):j===q.correct;return`<li${cor?' style="font-weight:700;color:#2e7d32"':''}>${escX(o)}</li>`;}).join('')}</ol>`;
     return`<tr><td>${i+1}</td><td>${escX(TYPE_LABEL[q.type]||q.type)}</td><td>${escX(q.prompt)}</td><td>${opts}</td><td>${DIFF_LABEL[q.difficulty||2]}</td><td>${BS_LABEL[q.bank_status||'draft']}</td><td>${q.exam_eligible?'⭐':''}</td><td style="font-size:.8em">${escX(q.moodle_category_path||'—')}</td></tr>`;
   }).join('');
-  return`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>${escX(title)}</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px;color:#1a1a2e}h1{color:#3d5a99;font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde3ec;padding:6px 8px;vertical-align:top;text-align:left}th{background:#3d5a99;color:#fff;font-size:12px}tr:nth-child(even){background:#f5f7fa}p{font-size:12px;color:#667}</style></head><body><h1>${escX(title)}</h1><p>Generato: ${new Date().toLocaleString('it-IT')} — Moodle Quiz Builder v1.7 | ${items.length} domande</p><table><thead><tr><th>#</th><th>Tipo</th><th>Domanda</th><th>Opzioni</th><th>Difficoltà</th><th>Stato</th><th>Esame</th><th>Categoria</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  return`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>${escX(title)}</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px;color:#1a1a2e}h1{color:#3d5a99;font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde3ec;padding:6px 8px;vertical-align:top;text-align:left}th{background:#3d5a99;color:#fff;font-size:12px}tr:nth-child(even){background:#f5f7fa}p{font-size:12px;color:#667}</style></head><body><h1>${escX(title)}</h1><p>Generato: ${new Date().toLocaleString('it-IT')} — Moodle Quiz Builder v1.7.1 | ${items.length} domande</p><table><thead><tr><th>#</th><th>Tipo</th><th>Domanda</th><th>Opzioni</th><th>Difficoltà</th><th>Stato</th><th>Esame</th><th>Categoria</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
 }
 function buildTXTSummary(items,title){
   const sep='='.repeat(Math.min(title.length,60));
@@ -1517,7 +1535,7 @@ function buildManifestJSON(items,scope){
   TYPES.forEach(t=>bt[t]=items.filter(q=>q.type===t).length);
   Object.keys(BS_LABEL).forEach(s=>bs2[s]=items.filter(q=>(q.bank_status||'draft')===s).length);
   [1,2,3].forEach(d=>bd[DIFF_LABEL[d]]=items.filter(q=>(q.difficulty||2)===d).length);
-  return{generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7',scope,naming:{...zipNaming},
+  return{generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7.1',scope,naming:{...zipNaming},
     statistics:{total:items.length,by_type:bt,by_status:bs2,by_difficulty:bd,
       aiken_compatible:items.filter(q=>aikenCheck(q).ok).length,
       gift_compatible:items.filter(q=>giftCheck(q).ok).length,
@@ -1533,7 +1551,7 @@ function buildComplianceText(bankItems,examItems,allFiles){
   const lines=[
     'COMPLIANCE REPORT','=================',
     `Generato: ${new Date().toLocaleString('it-IT')}`,
-    `Tool: Moodle Quiz Builder v1.7`,`Naming base: ${buildBaseName()}`,'',
+    `Tool: Moodle Quiz Builder v1.7.1`,`Naming base: ${buildBaseName()}`,'',
     'BANCA DOMANDE','─────────────',
     `Item totali (non rifiutati): ${bankItems.length}`,
     `  Approvati   : ${bankItems.filter(q=>q.bank_status==='approved').length}`,
@@ -1560,10 +1578,10 @@ function buildComplianceText(bankItems,examItems,allFiles){
   return lines.join('\n');
 }
 function buildREADMEImport(){
-  return`README — IMPORTAZIONE IN MOODLE\n================================\n\n1. Moodle XML (consigliato — tutti i tipi)\n   File: *_moodle.xml\n   → Banca domande > Importa > "Moodle XML format"\n\n2. GIFT (tutti i tipi)\n   File: *.gift\n   → Banca domande > Importa > "GIFT format"\n\n3. AIKEN (solo MCQ risposta singola)\n   File: *_aiken.txt\n   → Banca domande > Importa > "Aiken format"\n\n4. CSV — solo per revisione in foglio di calcolo.\n   Non è un formato di importazione Moodle nativo.\n\nAVVERTENZE\n----------\n- Crea la categoria di destinazione in Moodle prima di importare\n- Gli item con status "rejected" non sono inclusi negli export\n- I file XML includono le categorie definite per ogni item\n\nVersione Moodle consigliata: 3.9+\nGenerato da: Moodle Quiz Builder v1.7`;
+  return`README — IMPORTAZIONE IN MOODLE\n================================\n\n1. Moodle XML (consigliato — tutti i tipi)\n   File: *_moodle.xml\n   → Banca domande > Importa > "Moodle XML format"\n\n2. GIFT (tutti i tipi)\n   File: *.gift\n   → Banca domande > Importa > "GIFT format"\n\n3. AIKEN (solo MCQ risposta singola)\n   File: *_aiken.txt\n   → Banca domande > Importa > "Aiken format"\n\n4. CSV — solo per revisione in foglio di calcolo.\n   Non è un formato di importazione Moodle nativo.\n\nAVVERTENZE\n----------\n- Crea la categoria di destinazione in Moodle prima di importare\n- Gli item con status "rejected" non sono inclusi negli export\n- I file XML includono le categorie definite per ogni item\n\nVersione Moodle consigliata: 3.9+\nGenerato da: Moodle Quiz Builder v1.7.1`;
 }
 function buildREADMEPackage(base,date,bankItems,examItems){
-  return`README — DESCRIZIONE PACCHETTO\n==============================\n\nNome: ${base}_package_${date}.zip\nGenerato: ${new Date().toLocaleString('it-IT')}\nTool: Moodle Quiz Builder v1.7\n\nNAMING CONVENTION\n-----------------\nOrganizzazione : ${zipNaming.organization||'(non specificata)'}\nCorso          : ${zipNaming.course||'(non specificato)'}\nModulo         : ${zipNaming.module||'(non specificato)'}\nTipo           : ${zipNaming.assessmentType}\nLingua         : ${zipNaming.language}\nVersione       : ${zipNaming.version}\n\nSTRUTTURA ZIP\n-------------\nquestion-bank/ — Banca domande (${bankItems.length} item non rifiutati)\nfinal-exam/    — Prova finale (${examItems.length} item selezionati)\nmanifests/     — Manifest JSON strutturati\ncompliance/    — Report di conformità e incompatibilità\nreadme/        — Documentazione, istruzioni, indice\n\nSTATISTICHE\n-----------\n${TYPES.map(t=>`${(TYPE_LABEL[t]||t).padEnd(16)}: ${bankItems.filter(q=>q.type===t).length} banca / ${examItems.filter(q=>q.type===t).length} prova`).join('\n')}\nAIKEN compatibili: ${bankItems.filter(q=>aikenCheck(q).ok).length}\nGIFT compatibili : ${bankItems.filter(q=>giftCheck(q).ok).length}\nXML compatibili  : ${bankItems.filter(q=>mxmlCheck(q).ok).length}`;
+  return`README — DESCRIZIONE PACCHETTO\n==============================\n\nNome: ${base}_package_${date}.zip\nGenerato: ${new Date().toLocaleString('it-IT')}\nTool: Moodle Quiz Builder v1.7.1\n\nNAMING CONVENTION\n-----------------\nOrganizzazione : ${zipNaming.organization||'(non specificata)'}\nCorso          : ${zipNaming.course||'(non specificato)'}\nModulo         : ${zipNaming.module||'(non specificato)'}\nTipo           : ${zipNaming.assessmentType}\nLingua         : ${zipNaming.language}\nVersione       : ${zipNaming.version}\n\nSTRUTTURA ZIP\n-------------\nquestion-bank/ — Banca domande (${bankItems.length} item non rifiutati)\nfinal-exam/    — Prova finale (${examItems.length} item selezionati)\nmanifests/     — Manifest JSON strutturati\ncompliance/    — Report di conformità e incompatibilità\nreadme/        — Documentazione, istruzioni, indice\n\nSTATISTICHE\n-----------\n${TYPES.map(t=>`${(TYPE_LABEL[t]||t).padEnd(16)}: ${bankItems.filter(q=>q.type===t).length} banca / ${examItems.filter(q=>q.type===t).length} prova`).join('\n')}\nAIKEN compatibili: ${bankItems.filter(q=>aikenCheck(q).ok).length}\nGIFT compatibili : ${bankItems.filter(q=>giftCheck(q).ok).length}\nXML compatibili  : ${bankItems.filter(q=>mxmlCheck(q).ok).length}`;
 }
 
 // ── ZIP BUILDER ───────────────────────────────────────────────────────
@@ -1582,7 +1600,7 @@ function buildZIPContents(){
   const aiB=bankItems.filter(q=>aikenCheck(q).ok);
   aiB.length?add(B,`${base}_bank_${date}_aiken.txt`,buildAIKENContent(aiB)):add(B,`${base}_bank_${date}_aiken.txt`,'','Nessuna domanda AIKEN compatibile');
   const giB=bankItems.filter(q=>giftCheck(q).ok);
-  if(giB.length){const l=['// GIFT — Moodle Quiz Builder v1.7',''];giB.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(B,`${base}_bank_${date}.gift`,l.join('\n'));}
+  if(giB.length){const l=['// GIFT — Moodle Quiz Builder v1.7.1',''];giB.forEach(q=>{l.push(buildGIFT(q));l.push('');});add(B,`${base}_bank_${date}.gift`,l.join('\n'));}
   else add(B,`${base}_bank_${date}.gift`,'','Nessuna domanda GIFT compatibile');
   const xB=bankItems.filter(q=>mxmlCheck(q).ok);
   xB.length?add(B,`${base}_bank_${date}_moodle.xml`,buildMoodleXML(xB)):add(B,`${base}_bank_${date}_moodle.xml`,'','Nessuna domanda XML compatibile');
@@ -1625,7 +1643,7 @@ function buildZIPContents(){
   add('readme',`README-package_${date}.txt`,buildREADMEPackage(base,date,bankItems,examItems));
   // index-manifest last (references all other files)
   add('readme',`index-manifest_${date}.json`,JSON.stringify({
-    generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7',
+    generated:new Date().toISOString(),tool:'Moodle Quiz Builder v1.7.1',
     package:`${base}_package_${date}.zip`,naming:{...zipNaming},
     files:files.filter(f=>f.included).map(f=>({path:`${f.folder}/${f.filename}`,size_bytes:f.content.length,format:f.filename.split('.').pop()})),
     excluded:files.filter(f=>!f.included).map(f=>({path:`${f.folder}/${f.filename}`,reason:f.reason}))
@@ -1726,7 +1744,7 @@ function buildPerSourceFiles(items,{fmt='aiken',prefix='',catPerSource=true,incl
     if(ok.length){
       if(fmt==='aiken')content=buildAIKENContent(ok);
       else if(fmt==='gift'){
-        const l=[`// ${s?`Fonte ${s.num}: ${s.ref}`:'Domande senza fonte'}`,`// Moodle Quiz Builder v1.7`,''];
+        const l=[`// ${s?`Fonte ${s.num}: ${s.ref}`:'Domande senza fonte'}`,`// Moodle Quiz Builder v1.7.1`,''];
         if(catPerSource)l.push(`$CATEGORY: ${srcCategory(s)}`,'');
         ok.forEach(q=>{l.push(buildGIFT(q));l.push('');});content=l.join('\n');
       }else content=buildMoodleXML(catPerSource?ok.map(q=>({...q,moodle_category_path:srcCategory(s)})):ok);
